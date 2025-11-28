@@ -1,4 +1,4 @@
-from customtkinter import *
+import customtkinter 
 from tkinter import *
 import os
 #widgets = GUI elemnets: buttons, textboxes, images
@@ -6,19 +6,18 @@ import os
 def click():
     print("Button clicked!")
 #Creating the window
-window = Tk()
-
+window = customtkinter.CTk()
+customtkinter.set_appearance_mode("dark")  # Modes: "system" (standard), "dark", "light"
+customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard
 #Creating a button widget
 button = Button(window, text="Next")
 button.config(command=click)
 button.config(font=('Ink Free',20,'bold'))
-button.config(bg='#ff6200')
-button.config(fg='#fffb1f')
-button.config(activebackground = '#FF0000')
+button.config(activebackground = "#0c8ef8")
 button.config(activeforeground = "#fffb1f")
 
 #photo image
-photo = PhotoImage(file = r"C:\\TARUMT\\Assignment\\resourse\\fitness.png")
+photo = PhotoImage(file = r"C:\\TARUMT\\Python\\Assignment\\resourse\\fitness.png")
 photo = photo.subsample(3,3) #resize image
 #window size
 window.geometry("420x420") #width x height 
@@ -26,12 +25,8 @@ window.geometry("420x420") #width x height
 window.title("FitQuest ")
 
 #displaying an icon
-icon = PhotoImage(file="C:\\TARUMT\\Assignment\\resourse\\logo.png")
+icon = PhotoImage(file="C:\\TARUMT\\Python\\Assignment\\resourse\\logo.png")
 window.iconphoto(True, icon)
-
-#background color
-window.config(background="white")
-
 # Create a label widget
 welcome = Label(window, text = "Welcome to FitQuest!",
                  font=("Arial",40,"bold"),
