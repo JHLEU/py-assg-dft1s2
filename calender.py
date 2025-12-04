@@ -57,6 +57,8 @@ def day_clicked(day):
 
 
 
+
+
 # ------------------ Update and draw calendar ------------------
 def update_calendar():
     
