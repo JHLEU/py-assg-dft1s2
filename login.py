@@ -2,7 +2,8 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 from tkinter import messagebox
-import json # <-- Add import
+import json
+
 
 # Global variable to store the username of the logged-in user
 LOGGED_IN_USER = None
@@ -83,19 +84,6 @@ class Login_function:
             command=self.handle_login
         ).place(relx=0.9, rely=0.9, anchor="se")
 
-        #cancel button
-        ctk.CTkButton(
-            master=login_box,
-            text="Cancel",
-            width=150,              
-            height=36,              
-            fg_color="transparent",   
-            hover_color="#0400e0",
-            text_color="white",
-            font=("Arial", 11, "bold"),
-            command=self.window.destroy
-        ).place(relx=0.3, rely=0.9, anchor="se")
-
         # "Forget Password?" button - Placed below the password entry
         ctk.CTkButton(
             master=login_box,
@@ -108,7 +96,7 @@ class Login_function:
             command=self.handle_forget_password
         ).place(relx=0.76, rely=0.3) # Adjusted position
 
-        # "Not a member" button/link to call signup - Reverted to bottom center
+        # "Not a member" button/link to call signup
         ctk.CTkButton(
             master=login_box,
             text="Not a member yet? Sign up now!",
@@ -163,6 +151,10 @@ class Login_function:
             IS_LOGGED_IN = True
             messagebox.showinfo("Login Success", f"Welcome, {username}!")
             self.window.destroy()
+            from Assignment import PinkThemedFitnessQuestionn
+            root = tk.Tk()
+            app = PinkThemedFitnessQuestionn(root)
+            root.mainloop()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")
 
@@ -197,8 +189,12 @@ class Login_function:
         global LOGGED_IN_USER, IS_LOGGED_IN
         LOGGED_IN_USER = None
         IS_LOGGED_IN = False
-        messagebox.showinfo("Skip", "Continuing without login.")
         self.window.destroy()
+        
+        from Assignment import PinkThemedFitnessQuestionn
+        root = tk.Tk()
+        app = PinkThemedFitnessQuestionn(root)
+        root.mainloop()
 
 
 # Use when running directly (first time):

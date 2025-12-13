@@ -162,6 +162,11 @@ class Signup:
         ).place(relx=0.9, rely=0.9, anchor="se")
 
         #cancel button
+        def go_back_to_login():
+            window.destroy()
+            from login import Login_function
+            Login_function()
+
         ctk.CTkButton(
             master=signup_box,
             text="Cancel",
@@ -171,7 +176,7 @@ class Signup:
             hover_color="#0400e0",
             text_color="white",
             font=("Arial", 11, "bold"),
-            command=lambda: () #add command here !!!
+            command=go_back_to_login
         ).place(relx=0.3, rely=0.9, anchor="se")
 
         window.mainloop()
