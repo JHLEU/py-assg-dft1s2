@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import os
-from login import Login_function
+import json
 
 class Signup:
     def __init__(self):
@@ -31,15 +31,15 @@ class Signup:
             fg_color="transparent",
             text_color="black"
         )
-        
-        #signup text placement
+        #signup tittle text placement
         signup_text.place(
                         relx=0.5, 
                         rely=0.2, 
                         anchor = "center"
                         ) 
         
-        #signup box size
+
+        #signup bg box size
         signup_box = tk.Frame(
             window,
             width = 600,
@@ -49,14 +49,14 @@ class Signup:
             highlightbackground="black",  
             highlightthickness=0
         )
-
-        #signup box placement
+        #signup bg box placement
         signup_box.place(
             relx=0.6,
             rely=0.5,
             anchor="center"
         )
-        signup_box.pack_propagate(False)
+        signup_box.pack_propagate(False) #fix box size
+        
 
         #photo placement
         self.photo = photo
@@ -66,46 +66,85 @@ class Signup:
         )
         fit_photo.place(relx=0.353, rely=0.5, anchor="center")
 
+
+
         #Text box for user input
 
-        #Username
+        #Username display
         tk.Label(signup_box, 
                  text="Username                 :", 
                  bg="gray",                  
                  font=("Arial", 12, 'bold'),
                  ).place(relx = 0.02, rely = 0.2)
-        
-        tk.Entry(signup_box, 
+        #username entry
+        self.username_entry = tk.Entry(signup_box, 
                  width=30, 
                  font=("Arial", 13)
-                 ).place(relx = 0.3, rely = 0.2)
+                 )
+        self.username_entry.place(relx = 0.3, rely = 0.2)
         
-        #Password
+        
+        #Password display
         tk.Label(signup_box, 
                  text="Password                 :", 
                  bg="gray",                  
                  font=("Arial", 12, 'bold')
                  ).place(relx = 0.02, rely = 0.3)
-        
-        tk.Entry(signup_box, 
+        #password entry
+        self.password_entry = tk.Entry(signup_box, 
                  width=30, 
                  show="*", 
                  font=("Arial", 13)
-                 ).place(relx = 0.3, rely = 0.3)
+                 )
+        self.password_entry.place(relx = 0.3, rely = 0.3)
         
+
+        #confirm password display
         tk.Label(signup_box, 
                  text="Confirm Password :", 
                  bg="gray",                  
                  font=("Arial", 12, 'bold')
                  ).place(relx = 0.02, rely = 0.4)
-        
-        tk.Entry(signup_box, width=30, 
+        #confirm password entry
+        self.confirm_entry = tk.Entry(signup_box, width=30, 
                  show="*", 
                  font=("Arial", 13)
-                 ).place(relx = 0.3, rely = 0.4)
+                 )
+        self.confirm_entry.place(relx = 0.3, rely = 0.4)
         
-        def go_to_login(self):
-            tk.messagebox.showinfo("","Sign Up successfully !")
+        def go_to_login():
+            # Get values from entries
+            username = self.username_entry.get().strip()
+            password = self.password_entry.get()
+            confirm = self.confirm_entry.get()
+            
+            # --- VALIDATION ---
+            if not username or not password:
+                tk.messagebox.showwarning("Missing", "Please fill all fields")
+                return
+            
+            if password != confirm:
+                tk.messagebox.showerror("Error", "Passwords don't match")
+                return
+
+            # --- SAVE USER DATA TO JSON ---
+            try:
+                with open('users.json', 'r') as f:
+                    users = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                users = {} # Create new if file doesn't exist or is empty
+
+            if username in users:
+                tk.messagebox.showerror("Error", "This username is already taken.")
+                return
+
+            users[username] = password # Add new user
+            with open('users.json', 'w') as f:
+                json.dump(users, f, indent=4) # Save updated data
+
+            # --- PROCEED TO LOGIN ---
+            tk.messagebox.showinfo("Success", "Sign Up successfully!")
+            from login import Login_function
             window.destroy()
             Login_function()
 
@@ -119,7 +158,7 @@ class Signup:
             hover_color="#0400e0",
             text_color="white",
             font=("Arial", 11, "bold"),
-            command=lambda: (go_to_login(self), ) #add command here !!!
+            command=lambda: (go_to_login(), )
         ).place(relx=0.9, rely=0.9, anchor="se")
 
         #cancel button
@@ -134,6 +173,7 @@ class Signup:
             font=("Arial", 11, "bold"),
             command=lambda: () #add command here !!!
         ).place(relx=0.3, rely=0.9, anchor="se")
+
         window.mainloop()
 
        
