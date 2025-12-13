@@ -1,6 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import os
+import json
 
 class Signup:
     def __init__(self):
@@ -117,7 +118,7 @@ class Signup:
             password = self.password_entry.get()
             confirm = self.confirm_entry.get()
             
-            # Validate
+            # --- VALIDATION ---
             if not username or not password:
                 tk.messagebox.showwarning("Missing", "Please fill all fields")
                 return
@@ -125,12 +126,24 @@ class Signup:
             if password != confirm:
                 tk.messagebox.showerror("Error", "Passwords don't match")
                 return
-            
-            # Use the data (print, save, pass to another function)
-            print(f"Username: {username}, Password: {password}")
-            
+
+            # --- SAVE USER DATA TO JSON ---
+            try:
+                with open('users.json', 'r') as f:
+                    users = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                users = {} # Create new if file doesn't exist or is empty
+
+            if username in users:
+                tk.messagebox.showerror("Error", "This username is already taken.")
+                return
+
+            users[username] = password # Add new user
+            with open('users.json', 'w') as f:
+                json.dump(users, f, indent=4) # Save updated data
+
+            # --- PROCEED TO LOGIN ---
             tk.messagebox.showinfo("Success", "Sign Up successfully!")
-            
             from login import Login_function
             window.destroy()
             Login_function()

@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 from tkinter import messagebox
+import json # <-- Add import
 
 # Global variable to store the username of the logged-in user
 LOGGED_IN_USER = None
@@ -92,38 +93,72 @@ class Login_function:
             command=self.window.destroy
         ).place(relx=0.3, rely=0.9, anchor="se")
 
-        # "Not a member" button/link to call signup
+        # "Forget Password?" button - Placed below the password entry
+        ctk.CTkButton(
+            master=login_box,
+            text="Forget Password?",
+            width=50,
+            fg_color="transparent",
+            hover=False,
+            text_color="cyan",
+            font=("Arial", 10, "underline"),
+            command=self.handle_forget_password
+        ).place(relx=0.76, rely=0.3) # Adjusted position
+
+        # "Not a member" button/link to call signup - Reverted to bottom center
         ctk.CTkButton(
             master=login_box,
             text="Not a member yet? Sign up now!",
             fg_color="transparent",
-            hover=False, # Make it look more like a link
+            hover=False,
             text_color="white",
             font=("Arial", 10, "underline"),
             command=self.go_to_signup
-        ).place(relx=0.50, rely=0.39, anchor="center")
-
+        ).place(relx=0.5, rely=0.41, anchor="s") # Adjusted position
 
         self.window.mainloop()
 
     def handle_login(self):
-        """Handles the login logic."""
+        """Handles the login logic by validating against users.json."""
         global LOGGED_IN_USER
         username = self.username_entry.get().strip()
         password = self.password_entry.get()
 
-        # Dummy validation: check if fields are not empty
-        if not username or not password:
-            messagebox.showwarning("Login Failed", "Please enter both username and password.")
+        try:
+            with open('users.json', 'r') as f:
+                users = json.load(f)
+        except FileNotFoundError:
+            messagebox.showerror("Login Error", "No users have signed up yet.")
+            return
+
+        # Validate credentials
+        if username in users and users[username] == password:
+            LOGGED_IN_USER = username
+            messagebox.showinfo("Login Success", f"Welcome, {username}!")
+            self.window.destroy()
+        else:
+            messagebox.showerror("Login Failed", "Invalid username or password.")
+
+    def handle_forget_password(self):
+        """Asks for a username and shows the password."""
+        username = tk.simpledialog.askstring("Forget Password", "Enter your username to retrieve password:", parent=self.window)
+
+        if not username:
+            return # User cancelled
+
+        try:
+            with open('users.json', 'r') as f:
+                users = json.load(f)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "User database not found.")
             return
         
-        # In a real app, you would check credentials against a database here.
-        # For this dummy version, any non-empty login is successful.
-        
-        LOGGED_IN_USER = username # Set global variable
-        messagebox.showinfo("Login Success", f"Welcome, {username}!")
-        print(f"Login status: User '{LOGGED_IN_USER}' is logged in.") # For debugging
-        self.window.destroy()
+        # Find user and display password
+        if username in users:
+            password = users[username]
+            messagebox.showinfo("Password Recovery", f"The password for '{username}' is: {password}")
+        else:
+            messagebox.showerror("Not Found", f"The username '{username}' was not found.")
 
     def go_to_signup(self):
         """Destroys the login window and opens the signup window."""
