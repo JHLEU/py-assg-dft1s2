@@ -8,7 +8,7 @@ opt = input('please enter option: ')
 
 match opt:
     case "1":
-        Signup()
+        Login_function(show_skip=False)  # call the class; no Skip button when called by others
     case _:
         print('invalid')
 
