@@ -2,13 +2,17 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 from tkinter import messagebox
-import json # <-- Add import
+import json
+
 
 # Global variable to store the username of the logged-in user
 LOGGED_IN_USER = None
+IS_LOGGED_IN = False  # global login status (True after successful login)
 
 class Login_function:
-    def __init__(self):
+    def __init__(self, show_skip: bool = True):
+        self.show_skip = show_skip
+
         global LOGGED_IN_USER
         LOGGED_IN_USER = None # Reset on window creation
 
@@ -80,19 +84,6 @@ class Login_function:
             command=self.handle_login
         ).place(relx=0.9, rely=0.9, anchor="se")
 
-        #cancel button
-        ctk.CTkButton(
-            master=login_box,
-            text="Cancel",
-            width=150,              
-            height=36,              
-            fg_color="transparent",   
-            hover_color="#0400e0",
-            text_color="white",
-            font=("Arial", 11, "bold"),
-            command=self.window.destroy
-        ).place(relx=0.3, rely=0.9, anchor="se")
-
         # "Forget Password?" button - Placed below the password entry
         ctk.CTkButton(
             master=login_box,
@@ -105,7 +96,7 @@ class Login_function:
             command=self.handle_forget_password
         ).place(relx=0.76, rely=0.3) # Adjusted position
 
-        # "Not a member" button/link to call signup - Reverted to bottom center
+        # "Not a member" button/link to call signup
         ctk.CTkButton(
             master=login_box,
             text="Not a member yet? Sign up now!",
@@ -116,11 +107,34 @@ class Login_function:
             command=self.go_to_signup
         ).place(relx=0.5, rely=0.41, anchor="s") # Adjusted position
 
+        # Show Skip only on first launch
+        if self.show_skip:
+            tk.Button(
+                login_box,
+                text="Skip",
+                width=15,
+                bg="gray",
+                fg="white",
+                font=("Arial", 11, "bold"),
+                command=self.handle_skip
+            ).place(relx=0.1, rely=0.9, anchor="sw")
+
+        # Show Cancel only when called by others
+        if not self.show_skip:
+            tk.Button(
+                login_box,
+                text="Cancel",
+                width=15,
+                bg="gray",
+                fg="white",
+                font=("Arial", 11, "bold"),
+                command=self.window.destroy
+            ).place(relx=0.3, rely=0.9, anchor="se")
+
         self.window.mainloop()
 
     def handle_login(self):
-        """Handles the login logic by validating against users.json."""
-        global LOGGED_IN_USER
+        global LOGGED_IN_USER, IS_LOGGED_IN
         username = self.username_entry.get().strip()
         password = self.password_entry.get()
 
@@ -134,8 +148,13 @@ class Login_function:
         # Validate credentials
         if username in users and users[username] == password:
             LOGGED_IN_USER = username
+            IS_LOGGED_IN = True
             messagebox.showinfo("Login Success", f"Welcome, {username}!")
             self.window.destroy()
+            from Assignment import PinkThemedFitnessQuestionn
+            root = tk.Tk()
+            app = PinkThemedFitnessQuestionn(root)
+            root.mainloop()
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")
 
@@ -166,15 +185,25 @@ class Login_function:
         self.window.destroy()
         Signup()
 
+    def handle_skip(self):
+        global LOGGED_IN_USER, IS_LOGGED_IN
+        LOGGED_IN_USER = None
+        IS_LOGGED_IN = False
+        self.window.destroy()
+        
+        from Assignment import PinkThemedFitnessQuestionn
+        root = tk.Tk()
+        app = PinkThemedFitnessQuestionn(root)
+        root.mainloop()
 
+
+# Use when running directly (first time):
 if __name__ == "__main__":
-    Login_function()
-    # After the window closes, you can check the status
-    if LOGGED_IN_USER:
-        # Corrected the variable name from LOG_IN_USER to LOGGED_IN_USER
-        print(f"The program can now proceed with user: {LOGGED_IN_USER}")
-    else:
-        print("Login was cancelled or failed.")
+    Login_function(show_skip=True)
+
+# Called from other files:
+# from login import Login_function
+# Login_function(show_skip=False)
 
 
 
