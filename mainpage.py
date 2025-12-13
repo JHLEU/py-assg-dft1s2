@@ -1,10 +1,14 @@
 from login import Login_function
+from signup import Signup
 
-opt = input('please enter option')
+
+
+
+opt = input('please enter option: ')
 
 match opt:
     case "1":
-        Login_function()
-
+        Signup()
     case _:
         print('invalid')
+
