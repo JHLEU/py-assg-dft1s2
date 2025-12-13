@@ -18,7 +18,8 @@ button.config(activebackground = '#FF0000')
 button.config(activeforeground = "#fffb1f")
 
 #photo image
-photo = PhotoImage(file = r"C:\\Users\\leong\\Desktop\\assignment\\py-assg-dft1s2\\resourse\\fitness.png")
+photo_path = os.path.join(os.path.dirname(__file__), "resourse", "fitness.png")
+photo = PhotoImage(file=photo_path)
 photo = photo.subsample(3,3) #resize image
 #window size
 window.geometry("420x420") #width x height 
@@ -26,7 +27,8 @@ window.geometry("420x420") #width x height
 window.title("FitQuest ")
 
 #displaying an icon
-icon = PhotoImage(file="C:\\Users\\leong\\Desktop\\assignment\\py-assg-dft1s2\\resourse\\logo.png")
+icon_path = os.path.join(os.path.dirname(__file__), "resourse", "logo.png")
+icon = PhotoImage(file=icon_path)
 window.iconphoto(True, icon)
 
 #background color
