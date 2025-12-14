@@ -23,6 +23,10 @@ class Login_function:
         self.window.attributes('-topmost', True)
         self.window.lift()
         self.window.focus_force()
+        ctk.set_appearance_mode("Dark")  # Or "Dark"/"Light"
+        ctk.set_default_color_theme("blue")  # Your theme
+        ctk.set_widget_scaling(1.0)  # Base scaling; adjust if needed (e.g., 1.2 for higher DPI)
+        ctk.set_window_scaling(1.0)  # Window scaling
 
         #load icon files
         icon_path = os.path.join(os.path.dirname(__file__), 'resource', 'fitness.png')
@@ -42,24 +46,28 @@ class Login_function:
             fg_color="transparent",
             text_color="black"
         )
-        login_text.place(relx=0.5, rely=0.2, anchor = "center") 
+        login_text.pack(pady=(100,0), anchor = "center") 
         
+        # Container frame for photo + login box
+        LoginBox_container = tk.Frame(self.window, bg = "white")
+        LoginBox_container.pack(anchor = "center", pady = (50,0))
+
+        #photo placement
+        self.photo = photo
+        fit_photo = tk.Label(LoginBox_container, image=self.photo,)
+        fit_photo.pack(side="left")
+
         #login box
         login_box = tk.Frame(
-            self.window,
+            LoginBox_container,
             width = 600,
             height = 506,
             bg = "gray",
             highlightbackground="black",  
             highlightthickness=0
         )
-        login_box.place(relx=0.6, rely=0.5, anchor="center")
+        login_box.pack(side="right", pady=20)
         login_box.pack_propagate(False)
-
-        #photo placement
-        self.photo = photo
-        fit_photo = tk.Label(self.window, image=self.photo)
-        fit_photo.place(relx=0.353, rely=0.5, anchor="center")
 
         #Username
         tk.Label(login_box, text="Username :", bg="gray", font=("Arial", 12, 'bold')).place(relx = 0.02, rely = 0.2)
@@ -81,10 +89,10 @@ class Login_function:
             hover_color="#0400e0",
             text_color="white",
             font=("Arial", 11, "bold"),
-            command=self.handle_login
+            command=self.handle_login #go to handle login funtion to process user input credential
         ).place(relx=0.9, rely=0.9, anchor="se")
 
-        # "Forget Password?" button - Placed below the password entry
+        # "Forget Password?" button
         ctk.CTkButton(
             master=login_box,
             text="Forget Password?",
