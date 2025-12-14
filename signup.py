@@ -6,65 +6,50 @@ import json
 class Signup:
     def __init__(self):
         #initialize window setup
-        window = tk.Tk()
-        window.state("zoomed")
-        window.title("FitQuest")
-        window.attributes('-topmost', True)
-        window.lift()
-        window.focus_force()
+        self.window = tk.Tk()
+        self.window.state("zoomed")
+        self.window.title("FitQuest")
+        self.window.attributes('-topmost', True)
+        self.window.lift()
+        self.window.focus_force()
 
         #load icon files
         icon_path = os.path.join(os.path.dirname(__file__), 'resource', 'fitness.png')
         icon = tk.PhotoImage(file = icon_path)
-        window.config(background="#FFFFFF")
-        window.iconphoto(True,icon)
+        self.window.config(background="#FFFFFF")
+        self.window.iconphoto(True,icon)
 
         #load a image
         fit_photo_path = os.path.join(os.path.dirname(__file__), 'resource', 'mike_fit.png')
         photo = tk.PhotoImage(file = fit_photo_path)
 
-        # display tittle signup
-        signup_text = ctk.CTkLabel(
-            window,
-            text="Sign Up",
-            font=("Arial", 35, "bold"),
-            fg_color="transparent",
-            text_color="black"
-        )
-        #signup tittle text placement
-        signup_text.place(
-                        relx=0.5, 
-                        rely=0.2, 
-                        anchor = "center"
-                        ) 
-        
-
-        #signup bg box size
-        signup_box = tk.Frame(
-            window,
-            width = 600,
-            height = 506,
-            bg = "gray",
-            #border
-            highlightbackground="black",  
-            highlightthickness=0
-        )
-        #signup bg box placement
-        signup_box.place(
-            relx=0.6,
-            rely=0.5,
-            anchor="center"
-        )
-        signup_box.pack_propagate(False) #fix box size
-        
+        ctk.CTkLabel(self.window,
+                    text="Sign Up",
+                    font=("Arial",35, "bold"), 
+                    fg_color="white", 
+                    text_color="black"
+                    ).pack(anchor="center", pady=(50,0), )
+                    
+        # Container frame for photo + signupbox
+        signupbox_container = tk.Frame(self.window, bg = "white")
+        signupbox_container.pack(anchor = "center", pady = (100,0))
 
         #photo placement
         self.photo = photo
-        fit_photo = tk.Label(
-            window,
-            image=self.photo,
+        fit_photo = tk.Label(signupbox_container, image=self.photo,)
+        fit_photo.pack(side="left")
+
+        #signup box
+        signup_box = tk.Frame(
+            signupbox_container,
+            width = 600,
+            height = 506,
+            bg = "gray",
+            highlightbackground="black",  
+            highlightthickness=0
         )
-        fit_photo.place(relx=0.353, rely=0.5, anchor="center")
+        signup_box.pack(side="right", pady=20)
+        signup_box.pack_propagate(False)
 
 
 
@@ -145,7 +130,7 @@ class Signup:
             # --- PROCEED TO LOGIN ---
             tk.messagebox.showinfo("Success", "Sign Up successfully!")
             from login import Login_function
-            window.destroy()
+            self.window.destroy()
             Login_function()
 
         #signup button
@@ -163,7 +148,7 @@ class Signup:
 
         #cancel button
         def go_back_to_login():
-            window.destroy()
+            self.window.destroy()
             from login import Login_function
             Login_function()
 
@@ -179,7 +164,7 @@ class Signup:
             command=go_back_to_login
         ).place(relx=0.3, rely=0.9, anchor="se")
 
-        window.mainloop()
+        self.window.mainloop()
 
        
 
