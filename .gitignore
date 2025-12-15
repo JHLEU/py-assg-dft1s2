@@ -142,3 +142,11 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Virtual Environment
+assgvenv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
