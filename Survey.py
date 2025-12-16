@@ -8,7 +8,7 @@ class PinkThemedFitnessQuestionn:
         self.root.title("Personalized Fitness ")
         
         # Start at a manageable size and allow resizing
-        self.root.geometry("800x600") 
+        self.root.state("zoomed")  # Start maximized
         self.root.resizable(True, True) 
         
         # Bind F11 key to toggle fullscreen mode
