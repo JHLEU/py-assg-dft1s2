@@ -152,3 +152,5 @@ venv/
 # Python cache
 __pycache__/
 *.pyc
+
+user.json
