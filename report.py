@@ -8,13 +8,28 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 # =========================
+# Exercise Data
+# =========================
+
+exercise_data = {
+    "Walking": 4,
+    "Running": 10,
+    "Cycling": 8,
+    "Swimming": 9,
+    "Yoga": 3,
+    "Strength Training": 6
+}
+
+exercise_vars = {}
+
+
+# =========================
 # Functions
 # =========================
 
 def update_values():
     weight = float(weight_var.get())
     height = float(height_var.get())
-    activity = activity_var.get()
 
     # ---------- BMI ----------
     if height == 0:
@@ -34,20 +49,40 @@ def update_values():
     bmi_canvas.draw()
     bmi_canvas.get_tk_widget().pack()
 
-    # ---------- Water Intake ----------
-    base_water = weight * 0.033 * 1000
-    extra = 0 if activity == "Low" else 300 if activity == "Normal" else 700
-    water_total = base_water + extra
+    # ---------- Exercise Calories ----------
+    duration = float(duration_var.get())
 
-    water_label.config(text=f"{water_total:.0f} ml/day")
+    selected_exercises = []
+    total_rate = 0
+
+    for name, var in exercise_vars.items():
+        if var.get():
+            selected_exercises.append(name)
+            total_rate += exercise_data[name]
+
+    total_calories = duration * total_rate
+
+    calories_label.config(
+        text=f"Total Calories Burned: {total_calories:.0f} kcal"
+    )
 
     # ---------- Summary ----------
+    if selected_exercises and duration > 0:
+        explanation = (
+            f"Selected exercises: {', '.join(selected_exercises)}\n"
+            f"Calories per minute: {total_rate} kcal\n"
+            f"Duration: {duration:.0f} minutes\n"
+            f"Total burned: {total_calories:.0f} kcal"
+        )
+    else:
+        explanation = "No exercise selected."
+
     summary_label.config(
         text=(
             f"Weight: {weight} kg\n"
             f"Height: {height} cm\n"
-            f"BMI: {bmi:.1f}\n"
-            f"Water Intake: {water_total:.0f} ml/day"
+            f"BMI: {bmi:.1f}\n\n"
+            f"{explanation}"
         )
     )
 
@@ -84,6 +119,7 @@ root.title("Health Report")
 root.state("zoomed")
 root.configure(bg="#F5F6FA")
 
+
 # =========================
 # Scrollable Layout
 # =========================
@@ -104,7 +140,6 @@ canvas.configure(yscrollcommand=scrollbar.set)
 canvas.pack(side="left", fill="both", expand=True)
 scrollbar.pack(side="right", fill="y")
 
-# Mouse wheel scrolling
 def _on_mousewheel(event):
     canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
@@ -159,32 +194,44 @@ bmi_bar_container.pack(pady=10)
 
 
 # =========================
-# Water Intake Card
+# Exercise Card
 # =========================
 
-water_card = card(scrollable_frame)
-water_card.pack(padx=15, pady=10, fill="both")
+exercise_card = card(scrollable_frame)
+exercise_card.pack(padx=15, pady=10, fill="both")
 
-tk.Label(water_card, text="Water Intake", font=title_font, bg="white").pack(anchor="w")
+tk.Label(exercise_card, text="Exercise & Calories", font=title_font, bg="white").pack(anchor="w")
 
-activity_var = tk.StringVar(value="Normal")
+for name in exercise_data:
+    var = tk.BooleanVar()
+    exercise_vars[name] = var
 
-for text, value in [
-    ("Low Activity", "Low"),
-    ("Normal Activity", "Normal"),
-    ("High Activity", "High")
-]:
-    tk.Radiobutton(
-        water_card,
-        text=text,
-        variable=activity_var,
-        value=value,
+    tk.Checkbutton(
+        exercise_card,
+        text=f"{name} ({exercise_data[name]} kcal/min)",
+        variable=var,
         bg="white",
         font=label_font
     ).pack(anchor="w")
 
-water_label = tk.Label(water_card, text="0 ml/day", font=bold_font, bg="white")
-water_label.pack(anchor="w", pady=5)
+tk.Label(
+    exercise_card,
+    text="Exercise Duration (minutes)",
+    font=label_font,
+    bg="white",
+    pady=5
+).pack(anchor="w")
+
+duration_var = tk.StringVar(value="0")
+tk.Entry(exercise_card, textvariable=duration_var, font=label_font).pack()
+
+calories_label = tk.Label(
+    exercise_card,
+    text="Total Calories Burned: 0 kcal",
+    font=bold_font,
+    bg="white"
+)
+calories_label.pack(anchor="w", pady=5)
 
 
 # =========================
