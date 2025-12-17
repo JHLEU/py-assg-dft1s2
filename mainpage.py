@@ -1,14 +1,11 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-import json
-import os
+from tkinter import messagebox
 from datetime import datetime
 import webbrowser
 from login import IS_LOGGED_IN
 from progress_tracking import ProgressTrackingApp
+from login import LOGGED_IN_USER
 # --- Global Variables (REQUIRED) ---
-LOGGED_IN_USER = None
-# -----------------------------------
 
 class Mainpage:
     def __init__(self, root):
