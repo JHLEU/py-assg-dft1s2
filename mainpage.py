@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 import webbrowser
 from progress_tracking import ProgressTrackingApp
 # --- Global Variables (REQUIRED) ---
@@ -175,7 +175,7 @@ class Mainpage:
         self.logo_image_ref = None
         try:
             # NOTE: Assuming 'fitness.png' exists in the script's directory.
-            self.logo_image_ref = tk.PhotoImage(file="fitness.png")
+            self.logo_image_ref = tk.PhotoImage(file="resource/fitness.png")
             self.logo_image_ref = self.logo_image_ref.subsample(5, 5)
         except Exception:
             self.logo_image_ref = None
@@ -819,70 +819,6 @@ class Mainpage:
         ProgressTrackingApp()
         self.root.destroy()
         self.clear_content()
-        
-
-        header = tk.Label(self.scrollable_frame,
-                          text="📊 Progress Tracker (Weekly Summary)",
-                          font=('Arial', 28, 'bold'),
-                          fg=self.colors['dark'],
-                          bg=self.colors['light'])
-        header.pack(pady=(20, 30))
-        
-        if not self.exercise_log:
-            empty_label = tk.Label(self.scrollable_frame,
-                                    text="No progress data yet. Start logging your workouts!",
-                                    font=('Arial', 14),
-                                    fg=self.colors['text_light'],
-                                    bg=self.colors['light'])
-            empty_label.pack(pady=50)
-        else:
-            # Calculate weekly progress
-            weekly_data = {}
-            for log in self.exercise_log:
-                try:
-                    # Use a combination of Year and Week number for a unique key
-                    date = datetime.strptime(log['date'].split()[0], "%Y-%m-%d")
-                    week = date.strftime("%Y-W%W")
-                    if week not in weekly_data:
-                        weekly_data[week] = {'workouts': 0, 'calories': 0, 'duration': 0}
-                    weekly_data[week]['workouts'] += 1
-                    weekly_data[week]['calories'] += log.get('calories', 0)
-                    weekly_data[week]['duration'] += int(log.get('duration', 0))
-                except:
-                    continue # Skip logs with corrupted date/data
-            
-            # Display weekly summary (most recent first)
-            for week, data in sorted(weekly_data.items(), reverse=True):
-                week_frame = tk.Frame(self.scrollable_frame, bg=self.colors['card'], bd=1, relief='solid')
-                week_frame.pack(fill='x', padx=30, pady=10)
-                
-                year = week.split('-W')[0]
-                week_number = week.split('-W')[1]
-
-                week_label = tk.Label(week_frame,
-                                      text=f"Year {year} - Week {week_number}",
-                                      font=('Arial', 14, 'bold'),
-                                      fg=self.colors['primary'],
-                                      bg=self.colors['card'])
-                week_label.pack(anchor='w', padx=20, pady=(10, 5))
-                
-                stats_frame = tk.Frame(week_frame, bg=self.colors['card'])
-                stats_frame.pack(fill='x', padx=20, pady=(0, 15))
-                
-                stats = [
-                    f"Workouts: {data['workouts']}",
-                    f"Calories: {data['calories']}",
-                    f"Duration: {data['duration']} mins"
-                ]
-                
-                # REVISED: Display stats horizontally for a cleaner summary look
-                for stat in stats:
-                    stat_label = tk.Label(stats_frame,
-                                         text=stat,
-                                         font=('Arial', 11),
-                                         fg=self.colors['text'],
-                                         bg=self.colors['card'])
-                    stat_label.pack(side='left', padx=30) 
 
 # --- Main Execution Block (Controller Simulation) ---
 def start_login_process(root_window):
