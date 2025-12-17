@@ -153,4 +153,4 @@ venv/
 __pycache__/
 *.pyc
 
-user.json
+users.json
