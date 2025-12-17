@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime
 import webbrowser
+from login import IS_LOGGED_IN
 from progress_tracking import ProgressTrackingApp
 # --- Global Variables (REQUIRED) ---
 LOGGED_IN_USER = None
@@ -20,13 +21,7 @@ class Mainpage:
         self.stats_frame = None # This will track the entire stats bar container
         # Define a detailed default profile structure
         self.default_profile = {
-            'Username': 'Guest',
-            'Full Name': 'Guest User',
-            'Age': 'N/A',
-            'Weight': 'N/A',
-            'Height': 'N/A',
-            'Fitness Level': 'Beginner',
-            'Goals': 'Login to set and track goals'
+            'Username': 'Guest'
         }
         self.user_profile = self.default_profile.copy()
         # -------------------------------------
@@ -61,15 +56,14 @@ class Mainpage:
 
         # Fitness programs
         self.programs = [
-            { "name": "Push-up Program", "description": "Build chest and arm strength", "image": "pushup.jpg", "youtube": "https://www.youtube.com/watch?v=IODxDxX7oi4", "difficulty": "Beginner", "calories": "80-120 per 15 mins", "focus": "Chest, Arms, Core" },
-            { "name": "Sit-up Challenge", "description": "Core strengthening exercises", "image": "situp.jpg", "youtube": "https://www.youtube.com/watch?v=1fbU_MkV7NE", "difficulty": "Beginner", "calories": "60-90 per 15 mins", "focus": "Abs, Core" },
-            { "name": "Squat Mastery", "description": "Build powerful legs and glutes", "image": "squat.jpg", "youtube": "https://www.youtube.com/watch?v=aclHkVaku9U", "difficulty": "Intermediate", "calories": "100-150 per 15 mins", "focus": "Legs, Glutes" },
-            { "name": "Plank Progression", "description": "Core stability training", "image": "plank.jpg", "youtube": "https://www.youtube.com/watch?v=pSHjTRCQxIw", "difficulty": "Beginner", "calories": "40-70 per 10 mins", "focus": "Core, Shoulders" },
-            { "name": "Pull-up Training", "description": "Upper back strength", "image": "pullup.jpg", "youtube": "https://www.youtube.com/watch?v=eGo4IYlbE5g", "difficulty": "Advanced", "calories": "70-110 per 15 mins", "focus": "Back, Arms" },
-            { "name": "Lunge Program", "description": "Leg and balance training", "image": "lunge.jpg", "youtube": "https://www.youtube.com/watch?v=QOVaHwm-Q6U", "difficulty": "Intermediate", "calories": "90-130 per 15 mins", "focus": "Legs, Glutes" }
+            { "name": "Push-up Program", "description": "Build chest and arm strength", "youtube": "https://www.youtube.com/watch?v=IODxDxX7oi4", "difficulty": "Beginner", "calories": "80-120 per 15 mins", "focus": "Chest, Arms, Core" },
+            { "name": "Sit-up Challenge", "description": "Core strengthening exercises",  "youtube": "https://www.youtube.com/watch?v=1fbU_MkV7NE", "difficulty": "Beginner", "calories": "60-90 per 15 mins", "focus": "Abs, Core" },
+            { "name": "Squat Mastery", "description": "Build powerful legs and glutes",  "youtube": "https://www.youtube.com/watch?v=aclHkVaku9U", "difficulty": "Intermediate", "calories": "100-150 per 15 mins", "focus": "Legs, Glutes" },
+            { "name": "Plank Progression", "description": "Core stability training",  "youtube": "https://www.youtube.com/watch?v=pSHjTRCQxIw", "difficulty": "Beginner", "calories": "40-70 per 10 mins", "focus": "Core, Shoulders" },
+            { "name": "Pull-up Training", "description": "Upper back strength", "youtube": "https://www.youtube.com/watch?v=eGo4IYlbE5g", "difficulty": "Advanced", "calories": "70-110 per 15 mins", "focus": "Back, Arms" },
+            { "name": "Lunge Program", "description": "Leg and balance training", "youtube": "https://www.youtube.com/watch?v=QOVaHwm-Q6U", "difficulty": "Intermediate", "calories": "90-130 per 15 mins", "focus": "Legs, Glutes" }
         ]
 
-        self.load_data() # Load data first
         self.setup_ui()
     
     # ----------------------------------------------------
@@ -77,70 +71,12 @@ class Mainpage:
     # ----------------------------------------------------
     
     def _load_user_profile_data(self):
-        """Checks users.json for user existence and returns a profile dict."""
-        file_path = 'users.json' 
-        
-        if self.user_id is None:
-            return self.default_profile.copy() 
-        
+        """Returns profile based on global variable instead of JSON file."""
         current_profile = self.default_profile.copy()
-        current_profile['Username'] = self.user_id
+        if LOGGED_IN_USER:
+            current_profile['Username'] = LOGGED_IN_USER
+        return current_profile
         
-        try:
-            if os.path.exists(file_path):
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    all_user_credentials = json.load(f)
-                
-                if self.user_id in all_user_credentials:
-                    current_profile['Full Name'] = self.user_id # Default name to username
-                    return current_profile
-                else:
-                    return self.default_profile.copy() 
-                
-        except json.JSONDecodeError:
-            messagebox.showerror("Data Error", "User credentials file is corrupted.")
-        except Exception as e:
-            print(f"Error loading credentials: {e}")
-            
-        return self.default_profile.copy()
-
-    def load_data(self):
-        """Load saved data from fitness_data.json and user credentials."""
-        # 1. Load basic user info from users.json
-        self.user_profile = self._load_user_profile_data()
-        self.user_id = self.user_profile['Username'] 
-        
-        # 2. Load app data from fitness_data.json
-        try:
-            if os.path.exists('fitness_data.json'):
-                with open('fitness_data.json', 'r') as f:
-                    data = json.load(f)
-                    self.exercise_log = data.get('exercise_log', [])
-                    self.schedule = data.get('schedule', {})
-                    
-                    # Merge loaded profile data while preserving defaults
-                    loaded_profile = data.get('user_profile', {})
-                    for key, default_value in self.default_profile.items():
-                        # Only update if the loaded profile has a value
-                        if key in loaded_profile and loaded_profile[key] is not None:
-                            self.user_profile[key] = loaded_profile[key]
-        except:
-            # Silently fail loading if the file is corrupted or empty
-            pass 
-    
-    def save_data(self):
-        """Save app data (log, schedule, profile) to fitness_data.json"""
-        try:
-            data = {
-                'exercise_log': self.exercise_log,
-                'schedule': self.schedule,
-                'user_profile': self.user_profile
-            }
-            with open('fitness_data.json', 'w') as f:
-                json.dump(data, f, indent=4)
-        except Exception as e:
-            messagebox.showerror("Save Error", f"Failed to save data: {e}")
-    
     # ----------------------------------------------------
     # --- UTILITY AND SETUP METHODS ---
     # ----------------------------------------------------
@@ -277,7 +213,7 @@ class Mainpage:
     def show_home_screen(self):
         self.clear_content()
         self.everyrow_frame = tk.Frame(self.scrollable_frame, bg=self.colors['light'], width=1200, height=800)
-        display_name = self.user_profile.get('Full Name', 'Guest')
+        display_name = LOGGED_IN_USER#self.user_profile.get('Username', 'Guest')
 
         # Welcome
         welcome_frame = tk.Frame(self.everyrow_frame, bg=self.colors['light'])
@@ -492,7 +428,7 @@ class Mainpage:
         profile_card = tk.Frame(self.scrollable_frame, bg=self.colors['card'], bd=2, relief='groove')
         profile_card.pack(fill='x', padx=100, pady=(0, 30))
 
-        if not is_logged_in:
+        if not IS_LOGGED_IN:
             # --- GUEST MODE: Show Login Prompt Container ---
             info_frame = tk.Frame(profile_card, bg=self.colors['card'])
             info_frame.pack(expand=True, padx=20, pady=30)
@@ -537,13 +473,7 @@ class Mainpage:
 
             # Use the loaded self.user_profile dictionary keys
             profile_info = [
-                ("Username:", self.user_profile.get('Username', 'N/A')),
-                ("Full Name:", self.user_profile.get('Full Name', 'N/A')),
-                ("Age:", self.user_profile.get('Age', 'N/A')),
-                ("Weight (kg):", self.user_profile.get('Weight', 'N/A')),
-                ("Height (cm):", self.user_profile.get('Height', 'N/A')),
-                ("Fitness Level:", self.user_profile.get('Fitness Level', 'N/A')),
-                ("Goals:", self.user_profile.get('Goals', 'N/A')),
+                ("Username:", self.user_id),
             ]
             
             for label_text, value_text in profile_info:
@@ -562,130 +492,6 @@ class Mainpage:
                 tk.Label(info_row, text=display_text, font=('Arial', 12), 
                           fg=self.colors['text_light'], bg=self.colors['card'], anchor='w', wraplength=400).pack(side='left')
 
-            # Edit profile button
-            edit_btn = tk.Button(profile_card, text="✏️ Edit Profile", command=self.edit_profile)
-            edit_btn.pack(side='right', padx=30, pady=30)
-
-    def edit_profile(self):
-        """Edit profile dialog"""
-        
-        if self.user_id == 'Guest':
-             messagebox.showwarning("Access Denied", "Please log in to edit your profile.")
-             return
-             
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Edit Profile")
-        dialog.geometry("500x600")
-        dialog.configure(bg=self.colors['light'])
-
-        # Title
-        title = tk.Label(dialog,
-                          text="Edit Your Profile",
-                          font=('Arial', 20, 'bold'),
-                          fg=self.colors['dark'],
-                          bg=self.colors['light'])
-        title.pack(pady=30)
-        
-        # Form fields container
-        fields_frame = tk.Frame(dialog, bg=self.colors['light'])
-        fields_frame.pack(pady=20)
-
-        # Helper function to create rows
-        def create_entry_row(label_text, key, is_text_area=False):
-            frame = tk.Frame(fields_frame, bg=self.colors['light'])
-            frame.pack(pady=10)
-            
-            tk.Label(frame, text=label_text, font=('Arial', 11, 'bold'), 
-                      fg=self.colors['text'], bg=self.colors['light'], 
-                      width=15, anchor='w').pack(side='left')
-
-            if is_text_area:
-                widget = tk.Text(frame, font=('Arial', 11), height=4, width=25)
-                widget.insert('1.0', str(self.user_profile.get(key, '')))
-            elif key == 'Fitness Level':
-                var = tk.StringVar(value=self.user_profile.get(key, 'Beginner'))
-                widget = ttk.Combobox(frame, textvariable=var, values=['Beginner', 'Intermediate', 'Advanced'], font=('Arial', 11), width=23)
-            else:
-                widget = tk.Entry(frame, font=('Arial', 11), width=25)
-                # Ensure 'N/A' defaults to an empty string for easier editing
-                initial_value = str(self.user_profile.get(key, ''))
-                widget.insert(0, initial_value if initial_value != 'N/A' else '')
-            
-            widget.pack(side='left')
-            return widget 
-
-        # Create Rows for all fields
-        name_entry = create_entry_row("Full Name:", 'Full Name')
-        age_entry = create_entry_row("Age:", 'Age')
-        weight_entry = create_entry_row("Weight (kg):", 'Weight')
-        height_entry = create_entry_row("Height (cm):", 'Height')
-        level_combo_widget = create_entry_row("Fitness Level:", 'Fitness Level')
-        goals_text_widget = create_entry_row("Goals:", 'Goals', is_text_area=True)
-        
-        level_var = level_combo_widget.cget("textvariable")
-        
-        def save_profile():
-            try:
-                # 1. Validation and Type Conversion
-                full_name = name_entry.get().strip()
-                age = age_entry.get().strip()
-                weight = weight_entry.get().strip()
-                height = height_entry.get().strip()
-                goals = goals_text_widget.get('1.0', tk.END).strip()
-
-                if not full_name:
-                    raise ValueError("Full Name cannot be empty.")
-                
-                # Helper for numerical validation
-                def safe_convert(value, target_type):
-                    if not value: return 'N/A'
-                    try:
-                        return target_type(value)
-                    except ValueError:
-                        raise ValueError(f"'{value}' is not a valid number.")
-
-                # 2. Update profile data
-                self.user_profile['Full Name'] = full_name
-                self.user_profile['Age'] = safe_convert(age, int)
-                self.user_profile['Weight'] = safe_convert(weight, float)
-                self.user_profile['Height'] = safe_convert(height, float)
-                self.user_profile['Fitness Level'] = level_var.get()
-                self.user_profile['Goals'] = goals
-                
-                self.save_data() # Save the updated profile to file
-                
-                dialog.destroy()
-                self.show_profile() # Refresh view
-                messagebox.showinfo("Success", "Profile updated successfully!")
-                
-            except ValueError as ve:
-                messagebox.showerror("Error", f"Invalid input: {ve}")
-            except Exception as e:
-                messagebox.showerror("Error", f"An error occurred while saving: {e}")
-        
-        # Buttons
-        btn_frame = tk.Frame(dialog, bg=self.colors['light'])
-        btn_frame.pack(pady=30)
-        
-        cancel_btn = tk.Button(btn_frame,
-                              text="Cancel",
-                              font=('Arial', 11),
-                              bg=self.colors['text_light'],
-                              fg='white',
-                              padx=20,
-                              pady=5,
-                              command=dialog.destroy)
-        cancel_btn.pack(side='left', padx=10)
-        
-        save_btn = tk.Button(btn_frame,
-                            text="Save Profile",
-                            font=('Arial', 11, 'bold'),
-                            bg=self.colors['success'],
-                            fg='white',
-                            padx=20,
-                            pady=5,
-                            command=save_profile)
-        save_btn.pack(side='left', padx=10)
     # --- Calorie Calculator Screen ---
     def show_calorie_calculator(self):
         """Show calorie calculator screen"""
@@ -714,11 +520,6 @@ def start_login_process(root_window):
 
 if __name__ == "__main__":
     root = tk.Tk()   
-    # Create a dummy users.json file for testing the file access logic
-    if not os.path.exists('users.json'):
-          with open('users.json', 'w') as f:
-              json.dump({"test_user": "password", "admin": "admin123"}, f, indent=4)
-              
     app = Mainpage(root)
     
     # Inject the function that manages the switch back to login
