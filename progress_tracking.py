@@ -14,11 +14,6 @@ class ProgressTrackingApp:
         self.root.lift()
         self.root.focus_force()
 
-        ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("blue")
-        ctk.set_widget_scaling(1.0)
-        ctk.set_window_scaling(1.0)
-
         # ------------------ Icon ------------------
         self._set_icon()
 
@@ -27,12 +22,20 @@ class ProgressTrackingApp:
         self.current_month = datetime.now().month
 
         self.alreadyfit = {
-            '12-1': 'jianshen',
-            '12-3': '不知道',
-            '12-5': '不想动',
-            '12-7': '放弃中',
-            '12-9': '放弃吧'
-        }
+            '12-1': 'Push-up',
+            '12-2': 'Sit-up',
+            '12-3': 'Squat',
+            '12-4': 'Plank',
+            '12-5': 'Pull-up',
+            '12-6': 'Lunge',
+            '12-7': '',
+            '12-8': 'Push-up',
+            '12-9': 'Sit-up',
+            '12-10': 'Squat',
+            '12-11': 'Plank',
+            '12-12': 'Pull-up',
+            '12-13': 'Lunge',
+        }   
 
         self.weekly_tasks = {
             "Mon": "",
@@ -54,50 +57,52 @@ class ProgressTrackingApp:
         ]
 
         # ------------------ Title ------------------
-        label_title = ctk.CTkLabel(self.root, text="CALENDAR", font=("Arial", 30, "bold"))
-        label_title.pack(pady=10)
+        label_title = tk.Label(self.root, text="CALENDAR", font=("Arial", 20, "bold"))
+        label_title.pack(pady=0)
 
         # ------------------ Month Switch Frame ------------------
-        self.frame_top = ctk.CTkFrame(self.root)
-        self.frame_top.pack(pady=15)
+        self.frame_top = tk.Frame(self.root)
+        self.frame_top.pack(pady=0)
 
-        self.btn_prev = ctk.CTkButton(self.frame_top,
-                                      border_color="#FE0161",
-                                      border_width=2,
-                                      fg_color="#FFFFFF",
-                                      text_color="#FE0161",
-                                      hover_color="#FFB6C1",
-                                      text="<",
-                                      width=50,
-                                      command=self.prev_month)
+        self.btn_prev = tk.Button(self.frame_top,
+                                  text="<",
+                                  bg="white",
+                                  fg="#FE0161",
+                                  font=("Arial", 14, "bold"),
+                                  width=5,
+                                  borderwidth=2,
+                                  relief="solid",
+                                  command=self.prev_month)
         self.btn_prev.grid(row=0, column=0, padx=10)
 
-        self.label_month = ctk.CTkLabel(self.frame_top, text="", font=("Arial", 24, "bold"))
+        self.label_month = tk.Label(self.frame_top, 
+                                    text="", 
+                                    font=("Arial", 24, "bold"))
         self.label_month.grid(row=0, column=1, padx=10)
 
-        self.btn_next = ctk.CTkButton(self.frame_top,
-                                      border_color="#FE0161",
-                                      border_width=2,
-                                      fg_color="#FFFFFF",
-                                      text_color="#FE0161",
-                                      hover_color="#FFB6C1",
-                                      text=">",
-                                      width=50,
-                                      command=self.next_month)
+        self.btn_next = tk.Button(self.frame_top,
+                                  text=">",
+                                  bg="white",
+                                  fg="#FE0161",
+                                  font=("Arial", 14, "bold"),
+                                  width=5,
+                                  borderwidth=2,
+                                  relief="solid",
+                                  command=self.next_month)
         self.btn_next.grid(row=0, column=2, padx=10)
 
         # ------------------ Calendar Frame ------------------
-        self.frame_days = ctk.CTkFrame(self.root)
-        self.frame_days.pack(pady=10)
+        self.frame_days = tk.Frame(self.root)
+        self.frame_days.pack(pady=0)
 
         self.update_calendar()
 
         # ------------------ Weekly Progress ------------------
-        label_progress_title = ctk.CTkLabel(self.root, text="Progress Tracking", font=("Arial", 20, "bold"))
+        label_progress_title = tk.Label(self.root, text="Progress Tracking", font=("Arial", 20, "bold"))
         label_progress_title.pack(pady=10)
 
-        self.frame_week = ctk.CTkFrame(self.root)
-        self.frame_week.pack(pady=10)
+        self.frame_week = tk.Frame(self.root)
+        self.frame_week.pack(pady=0)
 
         self.draw_week_progress()
 
@@ -140,7 +145,7 @@ class ProgressTrackingApp:
         weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
         for i, week_name in enumerate(weekdays):
-            lbl = ctk.CTkLabel(self.frame_days, 
+            lbl = tk.Label(self.frame_days, 
                                text=week_name, 
                                font=("Arial", 14, "bold"))
             lbl.grid(row=0, column=i, padx=5, pady=5)
@@ -149,25 +154,24 @@ class ProgressTrackingApp:
         for row_idx, week in enumerate(month_data):
             for col_idx, day in enumerate(week):
                 if day == 0:
-                    lbl = ctk.CTkLabel(self.frame_days, text="", width=40)
-                    lbl.grid(row=row_idx + 1, column=col_idx, padx=5, pady=5)
+                    lbl = tk.Label(self.frame_days, text="", width=10)
+                    lbl.grid(row=row_idx + 1, column=col_idx, padx=10, pady=5)
                 else:
                     key = f"{self.current_month}-{day}"
                     activity = self.alreadyfit.get(key, "")
                     btn_text = f"{day}\n\n{activity}" if activity else f"{day}"
-                    btn = ctk.CTkButton(self.frame_days,
-                                         border_color="#FE0161",
-                                         border_width=2,
-                                         fg_color="#FFFFFF",
-                                         text_color="#FE0161",
-                                         hover_color="#FFB6C1",
-                                         text=btn_text,
-                                         width=100,
-                                         height=100,
-                                         font=("Arial", 16, "bold"),
-                                         anchor="n",
-                                         command=lambda d=day: self.day_clicked(d))
-                    btn.grid(row=row_idx + 1, column=col_idx, padx=5, pady=5)
+                    btn = tk.Button(self.frame_days,
+                                        text=btn_text,
+                                        width=10,
+                                        height=4,
+                                        bg="white",
+                                        fg="#FE0161",
+                                        font=("Arial", 12, "bold"),
+                                        borderwidth=2,
+                                        relief="solid",
+                                        anchor="n",
+                                        command=lambda d=day: self.day_clicked(d))
+                    btn.grid(row=row_idx + 1, column=col_idx, padx=10, pady=5)
 
     def day_clicked(self, day):
         """
@@ -215,38 +219,43 @@ class ProgressTrackingApp:
         Docstring for draw_week_progress
         """
         weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        today_index = weekdays.index(datetime.now().strftime("%a"))
+        today_index = weekdays.index(datetime.now().strftime("%a")) # Get today's index
 
         for widget in self.frame_week.winfo_children():
             widget.destroy()
 
         for idx, day_name in enumerate(weekdays):
-            cell_frame = ctk.CTkFrame(self.frame_week, fg_color="transparent", width=90, height=100)
+            cell_frame = tk.Frame(self.frame_week, width=90, height=180)
+            cell_frame.grid_propagate(False)
             cell_frame.grid(row=0, column=idx, padx=5, pady=5)
 
             # highlight today in week progress
             if idx == today_index:
-                cell_frame.configure(border_width=2, border_color="#FE0161")
+                cell_frame.configure(
+                    relief="solid",
+                    highlightthickness=2,
+                    highlightbackground="#FE0161")
+
 
             # past day disable button
             is_past_day = idx < today_index
-            btn = ctk.CTkButton(cell_frame,
+            btn = tk.Button(cell_frame,
                                 text=day_name,
-                                width=80,
-                                height=40,
+                                width=5,
+                                height=2,
                                 font=("Arial", 14, "bold"),
                                 state="disabled" if is_past_day else "normal",
                                 command=lambda d=day_name: self.week_day_clicked(d))
             btn.pack(pady=(5, 2))
 
-            lbl_task = ctk.CTkLabel(cell_frame, text=self.weekly_tasks.get(day_name, ""), font=("Arial", 12))
+            lbl_task = tk.Label(cell_frame, text=self.weekly_tasks.get(day_name, ""), font=("Arial", 12))
             lbl_task.pack()
 
     def week_day_clicked(self, day_name):
         """
         Docstring for week_day_clicked
         """
-        popup = ctk.CTkToplevel(self.root)
+        popup = tk.Toplevel(self.root)
         popup.title(f"{day_name} Activity")
         popup.geometry("300x200")
         popup.grab_set()
@@ -254,15 +263,12 @@ class ProgressTrackingApp:
         popup.lift()
         popup.focus_force()
 
-        original_alpha = self.root.attributes('-alpha')
-        self.root.attributes('-alpha', 1.0)  # 确保主窗口不透明
-        
-        lbl = ctk.CTkLabel(popup, text=f"Select activity for {day_name}", font=("Arial", 14))
+        lbl = tk.Label(popup, text=f"Select activity for {day_name}", font=("Arial", 14))
         lbl.pack(pady=10)
 
         selected_sport = tk.StringVar(value=self.weekly_tasks.get(day_name, "Rest"))
 
-        option_menu = ctk.CTkOptionMenu(popup, values=self.sports_list, variable=selected_sport)
+        option_menu = tk.OptionMenu(popup, selected_sport, *self.sports_list)
         option_menu.pack(pady=10)
 
         def save_task():
@@ -272,14 +278,13 @@ class ProgressTrackingApp:
             self.weekly_tasks[day_name] = selected_sport.get()
             popup.destroy()
             self.draw_week_progress()
-            self.root.attributes('-alpha', original_alpha)
 
             self.root.after(10, lambda: self.root.state("zoomed"))
             self.draw_week_progress()
         
         popup.protocol("WM_DELETE_WINDOW", save_task)
 
-        btn_save = ctk.CTkButton(popup, text="Save", command=save_task)
+        btn_save = tk.Button(popup, text="Save", command=save_task)
         btn_save.pack(pady=10)
 
 # ------------------ Run App ------------------
