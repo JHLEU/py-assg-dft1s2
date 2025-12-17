@@ -20,10 +20,7 @@ class ProgressTrackingApp:
         ctk.set_window_scaling(1.0)
 
         # ------------------ Icon ------------------
-        icon_path = os.path.join(os.path.dirname(__file__), 'resource', 'fitness.png')
-        if os.path.exists(icon_path):
-            icon = tk.PhotoImage(file=icon_path)
-            self.root.iconphoto(True, icon)
+        self._set_icon()
 
         # ------------------ Data ------------------
         self.current_year = datetime.now().year
@@ -106,6 +103,27 @@ class ProgressTrackingApp:
 
         # ------------------ Mainloop ------------------
         self.root.mainloop()
+
+    def _set_icon(self):
+        import os, tkinter as tk
+        # Adjust filenames to what you actually have in the project
+        base = os.path.dirname(os.path.abspath(__file__))
+        png_path = os.path.join(base, "fitness.png")
+        ico_path = os.path.join(base, "fitness.ico")
+        try:
+            if os.path.exists(png_path):
+                # IMPORTANT: bind image to the same root and keep a reference
+                self._icon_img = tk.PhotoImage(file=png_path, master=self.root)
+                self.root.iconphoto(True, self._icon_img)
+                return
+        except Exception:
+            pass
+        # Fallback for Windows .ico
+        try:
+            if os.path.exists(ico_path):
+                self.root.iconbitmap(default=ico_path)
+        except Exception:
+            pass
 
     # ------------------ Calendar Methods ------------------
     def update_calendar(self):

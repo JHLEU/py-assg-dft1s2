@@ -816,9 +816,10 @@ class Mainpage:
     # --- Progress Tracker Screen ---
     def show_progress_tracker(self):
         """Show progress tracker screen"""
+        ProgressTrackingApp()
         self.root.destroy()
         self.clear_content()
-        ProgressTrackingApp()
+        
 
         header = tk.Label(self.scrollable_frame,
                           text="📊 Progress Tracker (Weekly Summary)",
