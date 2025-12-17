@@ -1,191 +1,292 @@
 import customtkinter as ctk
 import calendar
 from datetime import datetime
-from tkinter import messagebox
 import tkinter as tk
+import os
 
-# ------------------ Set theme style ------------------
-ctk.set_appearance_mode("light")  # light / dark / system
+class ProgressTrackingApp:
+    def __init__(self):
+        # ------------------ Window Setup ------------------
+        self.root = tk.Tk()
+        self.root.state("zoomed")
+        self.root.title("FitQuest - Calendar")
+        self.root.attributes('-topmost', True)
+        self.root.lift()
+        self.root.focus_force()
 
-# ------------------ Create main window ------------------
-app = tk.Tk()
-app.title("FitQuest")
-app.geometry("700x750")  # 调大高度，方便放日历+周进度
+        # ------------------ Icon ------------------
+        self._set_icon()
 
-try:
-    app.iconbitmap(r"C:\Users\leong\Desktop\assignment\py-assg-dft1s2\resourse\logo.ico")
-except:
-    pass
+        # ------------------ Data ------------------
+        self.current_year = datetime.now().year
+        self.current_month = datetime.now().month
 
-# ------------------ Current year and month ------------------
-current_year = datetime.now().year
-current_month = datetime.now().month
+        self.alreadyfit = {
+            '12-1': 'Push-up',
+            '12-2': 'Sit-up',
+            '12-3': 'Squat',
+            '12-4': 'Plank',
+            '12-5': 'Pull-up',
+            '12-6': 'Lunge',
+            '12-7': '',
+            '12-8': 'Push-up',
+            '12-9': 'Sit-up',
+            '12-10': 'Squat',
+            '12-11': 'Plank',
+            '12-12': 'Pull-up',
+            '12-13': 'Lunge',
+        }   
 
-alreadyfit = {
-    '12-1': 'jianshen',
-    '12-3': '不知道',
-    '12-5': '不想动',
-    '12-7': '放弃中',
-    '12-9': '放弃吧'
-}
+        self.weekly_tasks = {
+            "Mon": "",
+            "Tue": "",
+            "Wed": "",
+            "Thu": "",
+            "Fri": "",
+            "Sat": "",
+            "Sun": "",
+        }
 
-# ------------------ Click a day (calendar) ------------------
-def day_clicked(day):
-    if day != 0:
-        activity = alreadyfit.get(f"{current_month}-{day}", "no do any sports")
-        popup = tk.Toplevel(app)
+        self.sports_list = [
+            "Push-up",
+            "Sit-up",
+            "Squat",
+            "Plank",
+            "Pull-up",
+            "Lunge"
+        ]
+
+        # ------------------ Title ------------------
+        label_title = tk.Label(self.root, text="CALENDAR", font=("Arial", 20, "bold"))
+        label_title.pack(pady=0)
+
+        # ------------------ Month Switch Frame ------------------
+        self.frame_top = tk.Frame(self.root)
+        self.frame_top.pack(pady=0)
+
+        self.btn_prev = tk.Button(self.frame_top,
+                                  text="<",
+                                  bg="white",
+                                  fg="#FE0161",
+                                  font=("Arial", 14, "bold"),
+                                  width=5,
+                                  borderwidth=2,
+                                  relief="solid",
+                                  command=self.prev_month)
+        self.btn_prev.grid(row=0, column=0, padx=10)
+
+        self.label_month = tk.Label(self.frame_top, 
+                                    text="", 
+                                    font=("Arial", 24, "bold"))
+        self.label_month.grid(row=0, column=1, padx=10)
+
+        self.btn_next = tk.Button(self.frame_top,
+                                  text=">",
+                                  bg="white",
+                                  fg="#FE0161",
+                                  font=("Arial", 14, "bold"),
+                                  width=5,
+                                  borderwidth=2,
+                                  relief="solid",
+                                  command=self.next_month)
+        self.btn_next.grid(row=0, column=2, padx=10)
+
+        # ------------------ Calendar Frame ------------------
+        self.frame_days = tk.Frame(self.root)
+        self.frame_days.pack(pady=0)
+
+        self.update_calendar()
+
+        # ------------------ Weekly Progress ------------------
+        label_progress_title = tk.Label(self.root, text="Progress Tracking", font=("Arial", 20, "bold"))
+        label_progress_title.pack(pady=10)
+
+        self.frame_week = tk.Frame(self.root)
+        self.frame_week.pack(pady=0)
+
+        self.draw_week_progress()
+
+        # ------------------ Mainloop ------------------
+        self.root.mainloop()
+
+    def _set_icon(self):
+        import os, tkinter as tk
+        # Adjust filenames to what you actually have in the project
+        base = os.path.dirname(os.path.abspath(__file__))
+        png_path = os.path.join(base, "fitness.png")
+        ico_path = os.path.join(base, "fitness.ico")
+        try:
+            if os.path.exists(png_path):
+                # IMPORTANT: bind image to the same root and keep a reference
+                self._icon_img = tk.PhotoImage(file=png_path, master=self.root)
+                self.root.iconphoto(True, self._icon_img)
+                return
+        except Exception:
+            pass
+        # Fallback for Windows .ico
+        try:
+            if os.path.exists(ico_path):
+                self.root.iconbitmap(default=ico_path)
+        except Exception:
+            pass
+
+    # ------------------ Calendar Methods ------------------
+    def update_calendar(self):
+        """
+        function for update_calendar
+        """
+        for widget in self.frame_days.winfo_children():
+            widget.destroy()
+
+        self.label_month.configure(text=f"{calendar.month_name[self.current_month]} {self.current_year}") # Update month label
+
+        month_data = calendar.monthcalendar(self.current_year, self.current_month) # Get calendar data
+       
+        weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+        for i, week_name in enumerate(weekdays):
+            lbl = tk.Label(self.frame_days, 
+                               text=week_name, 
+                               font=("Arial", 14, "bold"))
+            lbl.grid(row=0, column=i, padx=5, pady=5)
+
+        # 日期按钮
+        for row_idx, week in enumerate(month_data):
+            for col_idx, day in enumerate(week):
+                if day == 0:
+                    lbl = tk.Label(self.frame_days, text="", width=10)
+                    lbl.grid(row=row_idx + 1, column=col_idx, padx=10, pady=5)
+                else:
+                    key = f"{self.current_month}-{day}"
+                    activity = self.alreadyfit.get(key, "")
+                    btn_text = f"{day}\n\n{activity}" if activity else f"{day}"
+                    btn = tk.Button(self.frame_days,
+                                        text=btn_text,
+                                        width=10,
+                                        height=4,
+                                        bg="white",
+                                        fg="#FE0161",
+                                        font=("Arial", 12, "bold"),
+                                        borderwidth=2,
+                                        relief="solid",
+                                        anchor="n",
+                                        command=lambda d=day: self.day_clicked(d))
+                    btn.grid(row=row_idx + 1, column=col_idx, padx=10, pady=5)
+
+    def day_clicked(self, day):
+        """
+        function for day_clicked
+        """
+        if day == 0:
+            return
+        key = f"{self.current_month}-{day}"
+        activity = self.alreadyfit.get(key, "no do any sports")
+        popup = tk.Toplevel(self.root)
         popup.geometry("300x150")
-        label = tk.Label(popup,
-                         text=f"你点击了：{current_year}-{current_month}-{day}\n\n{activity}",
-                         font=("Arial", 14),
-                         justify="center",
-                         anchor="center")
+        popup.title("Day Info")
+        popup.attributes('-topmost', True)
+        label = tk.Label(popup, 
+                         text=f"{self.current_year}-{self.current_month}-{day}\n\n{activity}",
+                         font=("Arial", 14), justify="center")
         label.pack(expand=True)
-        btn = tk.Button(popup, text="确定", command=popup.destroy)
+
+        btn = tk.Button(popup, text="Confirm", command=popup.destroy)
         btn.pack(pady=10)
 
-# ------------------ Update and draw calendar ------------------
-def update_calendar():
-    for widget in frame_days.winfo_children():
-        widget.destroy()
+    def prev_month(self):
+        """
+        Docstring for prev_month
+        """
+        self.current_month -= 1
+        if self.current_month == 0:
+            self.current_month = 12
+            self.current_year -= 1
+        self.update_calendar()
 
-    label_month.configure(text=f"{calendar.month_name[current_month]} {current_year}")
-    month_data = calendar.monthcalendar(current_year, current_month)
-    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    for i, day_name in enumerate(weekdays):
-        lbl = ctk.CTkLabel(frame_days, text=day_name, font=("Arial", 14, "bold"))
-        lbl.grid(row=0, column=i, padx=5, pady=5)
+    def next_month(self):
+        """
+        Docstring for next_month
+        """
+        self.current_month += 1
+        if self.current_month == 13:
+            self.current_month = 1
+            self.current_year += 1
+        self.update_calendar()
 
-    for row_idx, week in enumerate(month_data):
-        for col_idx, day in enumerate(week):
-            if day == 0:
-                lbl = ctk.CTkLabel(frame_days, text="", width=40)
-                lbl.grid(row=row_idx + 1, column=col_idx, padx=5, pady=5)
-            else:
-                activity = alreadyfit.get(f"{current_month}-{day}", "")
-                btn_text = f"{day}\n\n{activity}" if activity else f"{day}"
-                btn = ctk.CTkButton(
-                    frame_days,
-                    border_color="#FE0161",
-                    border_width=2,
-                    fg_color="#FFFFFF",
-                    text_color="#FE0161",
-                    hover_color="#FFB6C1",
-                    text=btn_text,
-                    width=100,
-                    height=100,
-                    font=("Arial", 16, "bold"),
-                    anchor="n",
-                    command=lambda d=day: day_clicked(d)
-                )
-                btn.grid(row=row_idx + 1, column=col_idx, padx=5, pady=5)
+    # ------------------ Weekly Progress ------------------
+    def draw_week_progress(self):
+        """
+        Docstring for draw_week_progress
+        """
+        weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        today_index = weekdays.index(datetime.now().strftime("%a")) # Get today's index
 
-# ------------------ Previous / Next month buttons ------------------
-def prev_month():
-    global current_month, current_year
-    current_month -= 1
-    if current_month == 0:
-        current_month = 12
-        current_year -= 1
-    update_calendar()
+        for widget in self.frame_week.winfo_children():
+            widget.destroy()
 
-def next_month():
-    global current_month, current_year
-    current_month += 1
-    if current_month == 13:
-        current_month = 1
-        current_year += 1
-    update_calendar()
+        for idx, day_name in enumerate(weekdays):
+            cell_frame = tk.Frame(self.frame_week, width=90, height=180)
+            cell_frame.grid_propagate(False)
+            cell_frame.grid(row=0, column=idx, padx=5, pady=5)
 
-# ------------------ Top frame for month switch ------------------
-frame_top = ctk.CTkFrame(app)
-frame_top.pack(pady=15)
+            # highlight today in week progress
+            if idx == today_index:
+                cell_frame.configure(
+                    relief="solid",
+                    highlightthickness=2,
+                    highlightbackground="#FE0161")
 
-btn_prev = ctk.CTkButton(frame_top,
-                         border_color="#FE0161",
-                         border_width=2,
-                         fg_color="#FFFFFF",
-                         text_color="#FE0161",
-                         hover_color="#FFB6C1",
-                         text="<",
-                         width=50,
-                         command=prev_month)
-btn_prev.grid(row=0, column=0, padx=10)
 
-label_month = ctk.CTkLabel(frame_top, text="", font=("Arial", 24, "bold"))
-label_month.grid(row=0, column=1, padx=10)
+            # past day disable button
+            is_past_day = idx < today_index
+            btn = tk.Button(cell_frame,
+                                text=day_name,
+                                width=5,
+                                height=2,
+                                font=("Arial", 14, "bold"),
+                                state="disabled" if is_past_day else "normal",
+                                command=lambda d=day_name: self.week_day_clicked(d))
+            btn.pack(pady=(5, 2))
 
-btn_next = ctk.CTkButton(frame_top,
-                         border_color="#FE0161",
-                         border_width=2,
-                         fg_color="#FFFFFF",
-                         text_color="#FE0161",
-                         hover_color="#FFB6C1",
-                         text=">",
-                         width=50,
-                         command=next_month)
-btn_next.grid(row=0, column=2, padx=10)
+            lbl_task = tk.Label(cell_frame, text=self.weekly_tasks.get(day_name, ""), font=("Arial", 12))
+            lbl_task.pack()
 
-# ------------------ Calendar frame ------------------
-frame_days = ctk.CTkFrame(app)
-frame_days.pack(pady=10)
+    def week_day_clicked(self, day_name):
+        """
+        Docstring for week_day_clicked
+        """
+        popup = tk.Toplevel(self.root)
+        popup.title(f"{day_name} Activity")
+        popup.geometry("300x200")
+        popup.grab_set()
+        popup.attributes('-topmost', True)
+        popup.lift()
+        popup.focus_force()
 
-update_calendar()
+        lbl = tk.Label(popup, text=f"Select activity for {day_name}", font=("Arial", 14))
+        lbl.pack(pady=10)
 
-# ------------------ Weekly progress tracking ------------------
-today = datetime.now()
-today_weekday = today.strftime("%a")  # Mon, Tue...
-today_date = today.day
+        selected_sport = tk.StringVar(value=self.weekly_tasks.get(day_name, "Rest"))
 
-weekly_tasks = {
-    "Mon": "Push-up",
-    "Tue": "Run",
-    "Wed": "Rest",
-    "Thu": "Yoga",
-    "Fri": "Leg Day",
-    "Sat": "Swim",
-    "Sun": "Rest",
-}
+        option_menu = tk.OptionMenu(popup, selected_sport, *self.sports_list)
+        option_menu.pack(pady=10)
 
-def week_day_clicked(day_name):
-    task = weekly_tasks.get(day_name, "No task")
-    messagebox.showinfo("当天任务", f"{day_name} 的任务是：{task}")
+        def save_task():
+            """
+            Docstring for save_task
+            """
+            self.weekly_tasks[day_name] = selected_sport.get()
+            popup.destroy()
+            self.draw_week_progress()
 
-def draw_week_progress():
-    for widget in frame_week.winfo_children():
-        widget.destroy()
+            self.root.after(10, lambda: self.root.state("zoomed"))
+            self.draw_week_progress()
+        
+        popup.protocol("WM_DELETE_WINDOW", save_task)
 
-    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        btn_save = tk.Button(popup, text="Save", command=save_task)
+        btn_save.pack(pady=10)
 
-    for idx, day_name in enumerate(weekdays):
-        cell_frame = ctk.CTkFrame(frame_week, fg_color="transparent", width=90, height=100)
-        cell_frame.grid(row=0, column=idx, padx=5, pady=5)
-
-        if day_name == today_weekday:
-            cell_frame.configure(border_width=2, border_color="#FE0161")
-
-        btn = ctk.CTkButton(
-            cell_frame,
-            text=day_name,
-            width=80,
-            height=40,
-            font=("Arial", 14, "bold"),
-            command=lambda d=day_name: week_day_clicked(d)
-        )
-        btn.pack(pady=(5, 2))
-
-        lbl_task = ctk.CTkLabel(cell_frame, text=weekly_tasks.get(day_name, ""), font=("Arial", 12))
-        lbl_task.pack()
-
-# ------------------ Title ------------------
-label_title = ctk.CTkLabel(app, text="Progress Tracking", font=("Arial", 20, "bold"))
-label_title.pack(pady=10)
-
-# ------------------ Weekly frame ------------------
-frame_week = ctk.CTkFrame(app)
-frame_week.pack(pady=10)
-
-draw_week_progress()
-
-# ------------------ Main loop ------------------
-app.mainloop()
+# ------------------ Run App ------------------
+if __name__ == "__main__":
+    app = ProgressTrackingApp()

@@ -2,6 +2,8 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 import json
+from tkinter import messagebox
+from tkinter import simpledialog
 
 class Signup:
     def __init__(self):
@@ -105,11 +107,11 @@ class Signup:
             
             # --- VALIDATION ---
             if not username or not password:
-                tk.messagebox.showwarning("Missing", "Please fill all fields")
+                messagebox.showwarning("Missing", "Please fill all fields")
                 return
             
             if password != confirm:
-                tk.messagebox.showerror("Error", "Passwords don't match")
+                messagebox.showerror("Error", "Passwords don't match")
                 return
 
             # --- SAVE USER DATA TO JSON ---
@@ -120,7 +122,7 @@ class Signup:
                 users = {} # Create new if file doesn't exist or is empty
 
             if username in users:
-                tk.messagebox.showerror("Error", "This username is already taken.")
+                messagebox.showerror("Error", "This username is already taken.")
                 return
 
             users[username] = password # Add new user
@@ -128,7 +130,7 @@ class Signup:
                 json.dump(users, f, indent=4) # Save updated data
 
             # --- PROCEED TO LOGIN ---
-            tk.messagebox.showinfo("Success", "Sign Up successfully!")
+            messagebox.showinfo("Success", "Sign Up successfully!")
             from login import Login_function
             self.window.destroy()
             Login_function()

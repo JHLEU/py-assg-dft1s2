@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 from tkinter import messagebox
+from tkinter import simpledialog
 import json
 
 
@@ -159,7 +160,7 @@ class Login_function:
             IS_LOGGED_IN = True
             messagebox.showinfo("Login Success", f"Welcome, {username}!")
             self.window.destroy()
-            from Assignment import PinkThemedFitnessQuestionn
+            from Survey import PinkThemedFitnessQuestionn
             root = tk.Tk()
             app = PinkThemedFitnessQuestionn(root)
             root.mainloop()
@@ -168,7 +169,11 @@ class Login_function:
 
     def handle_forget_password(self):
         """Asks for a username and shows the password."""
-        username = tk.simpledialog.askstring("Forget Password", "Enter your username to retrieve password:", parent=self.window)
+        username = simpledialog.askstring(  # use imported name
+            "Forget Password",
+            "Enter your username to retrieve password:",
+            parent=self.window
+        )
 
         if not username:
             return # User cancelled
@@ -199,7 +204,7 @@ class Login_function:
         IS_LOGGED_IN = False
         self.window.destroy()
         
-        from Assignment import PinkThemedFitnessQuestionn
+        from Survey import PinkThemedFitnessQuestionn
         root = tk.Tk()
         app = PinkThemedFitnessQuestionn(root)
         root.mainloop()
