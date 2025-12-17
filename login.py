@@ -2,7 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 import os
 from tkinter import messagebox
-from tkinter import simpledialog  # add this
+from tkinter import simpledialog
 import json
 
 
