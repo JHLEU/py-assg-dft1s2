@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 import webbrowser
 from progress_tracking import ProgressTrackingApp
 # --- Global Variables (REQUIRED) ---
@@ -175,7 +175,7 @@ class Mainpage:
         self.logo_image_ref = None
         try:
             # NOTE: Assuming 'fitness.png' exists in the script's directory.
-            self.logo_image_ref = tk.PhotoImage(file="fitness.png")
+            self.logo_image_ref = tk.PhotoImage(file="resource/fitness.png")
             self.logo_image_ref = self.logo_image_ref.subsample(5, 5)
         except Exception:
             self.logo_image_ref = None
