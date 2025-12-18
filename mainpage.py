@@ -1,21 +1,22 @@
 import tkinter as tk
+import webbrowser
 from tkinter import messagebox
 from datetime import datetime
-import webbrowser
-from login import IS_LOGGED_IN
+# from login import IS_LOGGED_IN, LOGGED_IN_USER  <- This import is no longer needed for state
 from progress_tracking import ProgressTrackingApp
 from report import HealthReport
-from login import LOGGED_IN_USER
+
 # --- Global Variables (REQUIRED) ---
 
 class Mainpage:
-    def __init__(self, root):
+    def __init__(self, root, username=None, is_logged_in=False):
         self.root = root
         self.root.title("FitQuest Main Page")
         self.login_handler = None # For external app switching
         
         # --- Profile & Data Initialization ---
-        self.user_id = LOGGED_IN_USER # Get status from global
+        self.user_id = username if username else "Guest" # Get from constructor
+        self.is_logged_in = is_logged_in # Get from constructor
         self.stats_frame = None # This will track the entire stats bar container
         # Define a detailed default profile structure
         self.default_profile = {
@@ -68,12 +69,7 @@ class Mainpage:
     # --- DATA LOADING AND PERSISTENCE METHODS ---
     # ----------------------------------------------------
     
-    def _load_user_profile_data(self):
-        """Returns profile based on global variable instead of JSON file."""
-        current_profile = self.default_profile.copy()
-        if LOGGED_IN_USER:
-            current_profile['Username'] = LOGGED_IN_USER
-        return current_profile
+ 
         
     # ----------------------------------------------------
     # --- UTILITY AND SETUP METHODS ---
@@ -211,7 +207,7 @@ class Mainpage:
     def show_home_screen(self):
         self.clear_content()
         self.everyrow_frame = tk.Frame(self.scrollable_frame, bg=self.colors['light'], width=1200, height=800)
-        display_name = LOGGED_IN_USER#self.user_profile.get('Username', 'Guest')
+        display_name = self.user_id # Use the instance variable
 
         # Welcome
         welcome_frame = tk.Frame(self.everyrow_frame, bg=self.colors['light'])
@@ -412,8 +408,9 @@ class Mainpage:
         self.destroy_quick_stats()
         self.clear_content()
 
-        # Check login status: true if the user_id is NOT the generic 'Guest'
-        is_logged_in = self.user_id != 'Guest'
+        # Check login status using the instance variable
+        # if IS_LOGGED_IN == False:  <- No longer needed
+        #     self.user_id != 'Guest'
         
         # Header
         header = tk.Label(self.scrollable_frame,
@@ -426,7 +423,7 @@ class Mainpage:
         profile_card = tk.Frame(self.scrollable_frame, bg=self.colors['card'], bd=2, relief='groove')
         profile_card.pack(fill='x', padx=100, pady=(0, 30))
 
-        if not IS_LOGGED_IN:
+        if not self.is_logged_in:
             # --- GUEST MODE: Show Login Prompt Container ---
             info_frame = tk.Frame(profile_card, bg=self.colors['card'])
             info_frame.pack(expand=True, padx=20, pady=30)
@@ -519,7 +516,7 @@ def start_login_process(root_window):
 
 if __name__ == "__main__":
     root = tk.Tk()   
-    app = Mainpage(root)
+    app = Mainpage(root, username=None, is_logged_in=False) # Pass login status
     
     # Inject the function that manages the switch back to login
     app.set_login_handler(lambda: start_login_process(root))
