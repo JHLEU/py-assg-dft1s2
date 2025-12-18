@@ -284,7 +284,29 @@ class ProgressTrackingApp:
             Docstring for save_task
             """
             self.weekly_tasks[week_name] = selected_sport.get()
+
+
+            # 保存到 alreadyfit，只更新今天及未来的日期
+            month_data = calendar.monthcalendar(self.current_year, self.current_month)
+            weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            target_index = weekdays.index(week_name)
+
+            today = datetime.now().day
+            current_month = self.current_month
+            current_year = self.current_year
+
+            for week in month_data:
+
+                day_num = week[target_index]
+                if day_num != 0:
+                    # 只更新今天及之后的日期
+                    if day_num >= today:
+                        if day_num < (today + 7):
+                            key = f"{current_month}-{day_num}"
+                            self.alreadyfit[key] = selected_sport.get()
+
             popup.destroy()
+            self.draw_week_progress()
             self.update_calendar()
 
         
