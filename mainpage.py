@@ -492,8 +492,6 @@ class Mainpage:
         """Show calorie calculator screen"""
         new_root = tk.Tk()
         HealthReport(new_root)
-        self.root.destroy()
-        self.clear_content()
         
     # --- Progress Tracker Screen ---
     def show_progress_tracker(self):
