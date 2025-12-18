@@ -6,7 +6,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # from mainpage import Mainpage
-from Assignment import PinkThemedFitnessQuestionn
+from Survey import PinkThemedFitnessQuestionn
 
 class HealthReport:
 
