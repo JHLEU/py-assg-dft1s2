@@ -1,4 +1,3 @@
-import customtkinter as ctk
 import calendar
 from datetime import datetime
 import tkinter as tk
@@ -286,7 +285,7 @@ class ProgressTrackingApp:
             self.weekly_tasks[week_name] = selected_sport.get()
 
 
-            # 保存到 alreadyfit，只更新今天及未来的日期
+            # Save to Alreadyfit and only update today's and future dates.
             month_data = calendar.monthcalendar(self.current_year, self.current_month)
             weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             target_index = weekdays.index(week_name)
@@ -299,7 +298,7 @@ class ProgressTrackingApp:
 
                 day_num = week[target_index]
                 if day_num != 0:
-                    # 只更新今天及之后的日期
+                    # only update today's and future dates.
                     if day_num >= today:
                         if day_num < (today + 7):
                             key = f"{current_month}-{day_num}"
