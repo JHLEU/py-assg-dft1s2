@@ -199,15 +199,17 @@ class Login_function:
         Signup()
 
     def handle_skip(self):
-        global LOGGED_IN_USER, IS_LOGGED_IN
-        LOGGED_IN_USER = None
-        IS_LOGGED_IN = False
         self.window.destroy()
         
-        from Survey import PinkThemedFitnessQuestionn
-        root = tk.Tk()
-        app = PinkThemedFitnessQuestionn(root)
-        root.mainloop()
+        from mainpage import Mainpage, start_login_process
+    
+        new_root = tk.Tk()
+        app = Mainpage(new_root)
+        
+        # RE-INJECT THE HANDLER
+        app.set_login_handler(lambda: start_login_process(new_root))
+        
+        new_root.mainloop()
 
 
 # Use when running directly (first time):
