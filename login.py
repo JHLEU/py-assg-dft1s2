@@ -14,8 +14,9 @@ class Login_function:
     def __init__(self, show_skip: bool = True):
         self.show_skip = show_skip
 
-        global LOGGED_IN_USER
-        LOGGED_IN_USER = None # Reset on window creation
+        # Remove these lines - don't reset LOGGED_IN_USER on window creation
+        # global LOGGED_IN_USER
+        # LOGGED_IN_USER = None
 
         #initialize window setup
         self.window = tk.Tk()
@@ -156,14 +157,17 @@ class Login_function:
 
         # Validate credentials
         if username in users and users[username] == password:
-            LOGGED_IN_USER = username
-            IS_LOGGED_IN = True
+            LOGGED_IN_USER = username  # Set global
+            IS_LOGGED_IN = True  # Set global
             messagebox.showinfo("Login Success", f"Welcome, {username}!")
             self.window.destroy()
-            from Survey import PinkThemedFitnessQuestionn
-            root = tk.Tk()
-            app = PinkThemedFitnessQuestionn(root)
-            root.mainloop()
+            
+            # Import after setting globals
+            from mainpage import Mainpage
+            new_root = tk.Tk()
+            app = Mainpage(new_root, username=LOGGED_IN_USER, is_logged_in=True)
+            new_root.mainloop()
+            
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")
 
@@ -204,7 +208,7 @@ class Login_function:
         from mainpage import Mainpage, start_login_process
     
         new_root = tk.Tk()
-        app = Mainpage(new_root)
+        app = Mainpage(new_root, username=None, is_logged_in=False)
         
         # RE-INJECT THE HANDLER
         app.set_login_handler(lambda: start_login_process(new_root))
@@ -214,7 +218,7 @@ class Login_function:
 
 # Use when running directly (first time):
 if __name__ == "__main__":
-    Login_function(show_skip=True)
+    Login_function()
 
 # Called from other files:
 # from login import Login_function
