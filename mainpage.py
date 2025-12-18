@@ -4,8 +4,11 @@ from datetime import datetime
 import webbrowser
 from login import IS_LOGGED_IN
 from progress_tracking import ProgressTrackingApp
-from login import LOGGED_IN_USER
+from report import HealthReport
+from login import LOGGED_IN_USER , Login_function
+
 # --- Global Variables (REQUIRED) ---
+LOGGED_IN_USER = "Guest"
 
 class Mainpage:
     def __init__(self, root):
@@ -68,8 +71,9 @@ class Mainpage:
     # ----------------------------------------------------
     
     def _load_user_profile_data(self):
-        """Returns profile based on global variable instead of JSON file."""
+        """Satisfies the call in load_data by returning global variable info."""
         current_profile = self.default_profile.copy()
+        # Uses the variable imported from your login script
         if LOGGED_IN_USER:
             current_profile['Username'] = LOGGED_IN_USER
         return current_profile
@@ -77,7 +81,7 @@ class Mainpage:
     # ----------------------------------------------------
     # --- UTILITY AND SETUP METHODS ---
     # ----------------------------------------------------
-    
+     
     def set_login_handler(self, handler_function):
         self.login_handler = handler_function
 
@@ -446,7 +450,7 @@ class Mainpage:
                       padx=20,
                       pady=10,
                       relief='flat',
-                      command=self.start_login_process
+                      command=self.show_to_login
                       ).pack(pady=10)
 
         else:
@@ -491,10 +495,11 @@ class Mainpage:
 
     # --- Calorie Calculator Screen ---
     def show_calorie_calculator(self):
-        """Show calorie calculator screen"""
-        ProgressTrackingApp()
-        self.destroy_quick_stats()
-        self.clear_content()
+        """Transitions to the Health Report screen."""
+        # Create a new root for the report and destroy the current main page
+        new_root = tk.Tk()
+        HealthReport(new_root)
+        self.root.destroy()
         
     # --- Progress Tracker Screen ---
     def show_progress_tracker(self):
@@ -502,6 +507,13 @@ class Mainpage:
         ProgressTrackingApp()
         self.root.destroy()
         self.clear_content()
+
+    def show_to_login(self):
+        from login import Login_function
+        Login_function()
+        self.root.destroy()
+        self.clear_content()
+
 
 # --- Main Execution Block (Controller Simulation) ---
 def start_login_process(root_window):
