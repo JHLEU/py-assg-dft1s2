@@ -160,16 +160,18 @@ class PinkThemedFitnessQuestionn:
         program_text.config(state=tk.DISABLED)
         program_text.pack(pady=20, padx=40)
 
-        ttk.Button(self.main_frame, text="Return to Home 🏠", command=self.go_to_mainpage, style='TButton').pack(pady=20)
+        ttk.Button(self.main_frame, text="Proceed to Login  LoginPage", command=self.go_to_login, style='TButton').pack(pady=20)
 
-    def go_to_mainpage(self):
-        """Clears current UI and reloads the Mainpage class onto the existing root."""
-        self.main_frame.destroy() # Remove the survey UI
+    def go_to_login(self):
+        """Destroys the survey window and opens the login window."""
+        self.root.destroy() # Destroy the current survey window
         try:
-            from mainpage import Mainpage
-            Mainpage(self.root) # Initialize Mainpage on the same root window
+            from login import Login_function
+            # Login_function creates its own window. 
+            # Pass show_skip=False as the user is now registered.
+            Login_function(show_skip=False) 
         except ImportError:
-            messagebox.showerror("Error", "mainpage.py not found!")
+            messagebox.showerror("Error", "login.py not found!")
 
     def finish_questionnaire(self):
         for i in range(len(self.qa_data)):
