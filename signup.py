@@ -4,6 +4,7 @@ import os
 import json
 from tkinter import messagebox
 from tkinter import simpledialog
+from Survey import PinkThemedFitnessQuestionn
 
 class Signup:
     def __init__(self):
@@ -99,7 +100,7 @@ class Signup:
                  )
         self.confirm_entry.place(relx = 0.3, rely = 0.4)
         
-        def go_to_login():
+        def go_to_survey():
             # Get values from entries
             username = self.username_entry.get().strip()
             password = self.password_entry.get()
@@ -129,11 +130,13 @@ class Signup:
             with open('users.json', 'w') as f:
                 json.dump(users, f, indent=4) # Save updated data
 
-            # --- PROCEED TO LOGIN ---
+            # --- PROCEED TO SURVEY ---
             messagebox.showinfo("Success", "Sign Up successfully!")
-            from login import Login_function
             self.window.destroy()
-            Login_function()
+            from Survey import PinkThemedFitnessQuestionn
+            root = tk.Tk()
+            PinkThemedFitnessQuestionn(root)
+            root.mainloop()
 
         #signup button
         ctk.CTkButton(
@@ -145,7 +148,7 @@ class Signup:
             hover_color="#0400e0",
             text_color="white",
             font=("Arial", 11, "bold"),
-            command=lambda: (go_to_login(), )
+            command=lambda: (go_to_survey())###### go survey here
         ).place(relx=0.9, rely=0.9, anchor="se")
 
         #cancel button
