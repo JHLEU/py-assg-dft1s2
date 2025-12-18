@@ -157,7 +157,7 @@ class ProgressTrackingApp:
                                font=("Arial", 14, "bold"))
             lbl.grid(row=0, column=i, padx=5, pady=5)
 
-        # 日期按钮
+        # date button
         for row_idx, week in enumerate(month_data):
             for col_idx, day in enumerate(week):
                 if day == 0:
