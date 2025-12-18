@@ -118,16 +118,6 @@ class HealthReport:
         self.summary_label = tk.Label(card, text="", font=self.label_font, bg="white", justify="left")
         self.summary_label.pack(anchor="w")
 
-    def show_mainpage(self):
-        try:
-            from mainpage import Mainpage 
-            self.root.destroy() # Close the current HealthReport window
-            new_root = tk.Tk()
-            Mainpage(new_root)
-            new_root.mainloop()
-        except ImportError:
-            messagebox.showerror("Error", "mainpage.py not found.")
-
     def build_update_button(self):
         card = tk.Frame(self.scrollable_frame, bg="#F5F6FA")
         card.pack(padx=20, pady=20, fill="x")
@@ -136,7 +126,7 @@ class HealthReport:
                   bg="#0066FF", fg="white", font=("Segoe UI", 12, "bold"),
                   bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
 
-        tk.Button(card, text="Exit to Main", command=self.show_mainpage,
+        tk.Button(card, text="Exit to Main", command=self.root.destroy,
                   bg="#FE0161", fg="white", font=("Segoe UI", 12, "bold"),
                   bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
 
