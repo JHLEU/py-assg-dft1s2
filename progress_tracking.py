@@ -35,6 +35,14 @@ class ProgressTrackingApp:
             '12-11': 'Plank',
             '12-12': 'Pull-up',
             '12-13': 'Lunge',
+            '12-14': '',
+            '12-15': 'Push-up',
+            '12-16': 'Sit-up',
+            '12-17': 'Squat',
+            '12-18': '',
+            '12-19': '',
+            '12-20': '',
+            '12-21': '',
         }   
 
         self.weekly_tasks = {
@@ -224,7 +232,7 @@ class ProgressTrackingApp:
         for widget in self.frame_week.winfo_children():
             widget.destroy()
 
-        for idx, day_name in enumerate(weekdays):
+        for idx, week_name in enumerate(weekdays):
             cell_frame = tk.Frame(self.frame_week, width=90, height=180)
             cell_frame.grid_propagate(False)
             cell_frame.grid(row=0, column=idx, padx=5, pady=5)
@@ -240,33 +248,33 @@ class ProgressTrackingApp:
             # past day disable button
             is_past_day = idx < today_index
             btn = tk.Button(cell_frame,
-                                text=day_name,
+                                text=week_name,
                                 width=5,
                                 height=2,
                                 font=("Arial", 14, "bold"),
                                 state="disabled" if is_past_day else "normal",
-                                command=lambda d=day_name: self.week_day_clicked(d))
+                                command=lambda w=week_name: self.week_day_clicked(w))
             btn.pack(pady=(5, 2))
 
-            lbl_task = tk.Label(cell_frame, text=self.weekly_tasks.get(day_name, ""), font=("Arial", 12))
+            lbl_task = tk.Label(cell_frame, text=self.weekly_tasks.get(week_name, ""), font=("Arial", 12))
             lbl_task.pack()
 
-    def week_day_clicked(self, day_name):
+    def week_day_clicked(self, week_name, day=None):
         """
         Docstring for week_day_clicked
         """
         popup = tk.Toplevel(self.root)
-        popup.title(f"{day_name} Activity")
+        popup.title(f"{week_name} Activity")
         popup.geometry("300x200")
         popup.grab_set()
         popup.attributes('-topmost', True)
         popup.lift()
         popup.focus_force()
 
-        lbl = tk.Label(popup, text=f"Select activity for {day_name}", font=("Arial", 14))
+        lbl = tk.Label(popup, text=f"Select activity for {week_name}", font=("Arial", 14))
         lbl.pack(pady=10)
 
-        selected_sport = tk.StringVar(value=self.weekly_tasks.get(day_name, "Rest"))
+        selected_sport = tk.StringVar(value=self.weekly_tasks.get(week_name, "Rest"))
 
         option_menu = tk.OptionMenu(popup, selected_sport, *self.sports_list)
         option_menu.pack(pady=10)
@@ -275,17 +283,36 @@ class ProgressTrackingApp:
             """
             Docstring for save_task
             """
-            self.weekly_tasks[day_name] = selected_sport.get()
+            self.weekly_tasks[week_name] = selected_sport.get()
+
+
+            # 保存到 alreadyfit，只更新今天及未来的日期
+            month_data = calendar.monthcalendar(self.current_year, self.current_month)
+            weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            target_index = weekdays.index(week_name)
+
+            today = datetime.now().day
+            current_month = self.current_month
+            current_year = self.current_year
+
+            for week in month_data:
+
+                day_num = week[target_index]
+                if day_num != 0:
+                    # 只更新今天及之后的日期
+                    if day_num >= today:
+                        if day_num < (today + 7):
+                            key = f"{current_month}-{day_num}"
+                            self.alreadyfit[key] = selected_sport.get()
+
             popup.destroy()
             self.draw_week_progress()
+            self.update_calendar()
 
-            self.root.after(10, lambda: self.root.state("zoomed"))
-            self.draw_week_progress()
         
-        popup.protocol("WM_DELETE_WINDOW", save_task)
-
         btn_save = tk.Button(popup, text="Save", command=save_task)
         btn_save.pack(pady=10)
+
 
 # ------------------ Run App ------------------
 if __name__ == "__main__":
