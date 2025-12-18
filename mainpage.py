@@ -5,7 +5,8 @@ import webbrowser
 from login import IS_LOGGED_IN
 from progress_tracking import ProgressTrackingApp
 from report import HealthReport
-from login import LOGGED_IN_USER 
+from login import LOGGED_IN_USER
+# --- Global Variables (REQUIRED) ---
 
 class Mainpage:
     def __init__(self, root):
@@ -68,9 +69,8 @@ class Mainpage:
     # ----------------------------------------------------
     
     def _load_user_profile_data(self):
-        """Satisfies the call in load_data by returning global variable info."""
+        """Returns profile based on global variable instead of JSON file."""
         current_profile = self.default_profile.copy()
-        # Uses the variable imported from your login script
         if LOGGED_IN_USER:
             current_profile['Username'] = LOGGED_IN_USER
         return current_profile
@@ -78,7 +78,7 @@ class Mainpage:
     # ----------------------------------------------------
     # --- UTILITY AND SETUP METHODS ---
     # ----------------------------------------------------
-     
+    
     def set_login_handler(self, handler_function):
         self.login_handler = handler_function
 
@@ -492,11 +492,11 @@ class Mainpage:
 
     # --- Calorie Calculator Screen ---
     def show_calorie_calculator(self):
-        """Transitions to the Health Report screen."""
-        # Create a new root for the report and destroy the current main page
+        """Show calorie calculator screen"""
         new_root = tk.Tk()
         HealthReport(new_root)
         self.root.destroy()
+        self.clear_content()
         
     # --- Progress Tracker Screen ---
     def show_progress_tracker(self):
