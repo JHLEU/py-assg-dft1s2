@@ -5,10 +5,7 @@ import webbrowser
 from login import IS_LOGGED_IN
 from progress_tracking import ProgressTrackingApp
 from report import HealthReport
-from login import LOGGED_IN_USER , Login_function
-
-# --- Global Variables (REQUIRED) ---
-LOGGED_IN_USER = "Guest"
+from login import LOGGED_IN_USER 
 
 class Mainpage:
     def __init__(self, root):
@@ -450,7 +447,7 @@ class Mainpage:
                       padx=20,
                       pady=10,
                       relief='flat',
-                      command=self.show_to_login
+                      command=self.start_login_process
                       ).pack(pady=10)
 
         else:
@@ -507,13 +504,6 @@ class Mainpage:
         ProgressTrackingApp()
         self.root.destroy()
         self.clear_content()
-
-    def show_to_login(self):
-        from login import Login_function
-        Login_function()
-        self.root.destroy()
-        self.clear_content()
-
 
 # --- Main Execution Block (Controller Simulation) ---
 def start_login_process(root_window):

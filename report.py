@@ -134,11 +134,11 @@ class HealthReport:
         
         tk.Button(card, text="Calculate Report", command=self.update_values,
                   bg="#0066FF", fg="white", font=("Segoe UI", 12, "bold"),
-                  bd=0, padx=400, pady=10).pack(side="left", expand=True, fill="x", padx=5)
+                  bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
 
         tk.Button(card, text="Exit to Main", command=self.show_mainpage,
                   bg="#FE0161", fg="white", font=("Segoe UI", 12, "bold"),
-                  bd=0, padx=400, pady=10).pack(side="left", expand=True, fill="x", padx=5)
+                  bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
 
     def update_values(self):
         try:
