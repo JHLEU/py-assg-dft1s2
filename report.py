@@ -2,14 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 
 import matplotlib
-# Use TkAgg for proper integration with Tkinter windows
 matplotlib.use("TkAgg") 
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class HealthReport:
-
+    # Initialize the Health Report Application
     def __init__(self, root):
         self.root = root
         self.root.title("Health Report")
@@ -58,13 +57,16 @@ class HealthReport:
         self.build_update_button()
         self.build_delete_button()
         self.update_values()
-       
+
+    # create card frame   
     def card(self, master):
         return tk.Frame(master, bg="white", bd=1, relief="solid", padx=15, pady=15)
 
+    # Handle mouse wheel scrolling
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+    # Build Weight & Height Card
     def build_weight_card(self):
         card = self.card(self.scrollable_frame)
         card.pack(padx=15, pady=10, fill="both")
@@ -79,7 +81,7 @@ class HealthReport:
 
         tk.Label(card, text="Height (cm)", font=self.label_font, bg="white").pack(anchor="w")
         tk.Entry(card, textvariable=self.height_var, font=self.label_font).pack(fill="x", pady=5)
-
+    # Build BMI Card
     def build_bmi_card(self):
         card = self.card(self.scrollable_frame)
         card.pack(padx=15, pady=10, fill="both")
@@ -90,7 +92,7 @@ class HealthReport:
 
         self.bmi_bar_container = tk.Frame(card, bg="white")
         self.bmi_bar_container.pack(pady=10, fill="x")
-
+    # Build Exercise & Calories Card
     def build_exercise_card(self):
         card = self.card(self.scrollable_frame)
         card.pack(padx=15, pady=10, fill="both")
@@ -110,6 +112,7 @@ class HealthReport:
         self.calories_label = tk.Label(card, text="Total Calories Burned: 0 kcal", font=self.bold_font, bg="white")
         self.calories_label.pack(anchor="w", pady=10)
 
+    # Build Summary Card
     def build_summary_card(self):
         card = self.card(self.scrollable_frame)
         card.pack(padx=15, pady=10, fill="both")
@@ -118,6 +121,7 @@ class HealthReport:
         self.summary_label = tk.Label(card, text="", font=self.label_font, bg="white", justify="left")
         self.summary_label.pack(anchor="w")
 
+    # Build Update Button
     def build_update_button(self):
         card = tk.Frame(self.scrollable_frame, bg="#F5F6FA")
         card.pack(padx=20, pady=20, fill="x")
@@ -125,7 +129,8 @@ class HealthReport:
         tk.Button(card, text="Calculate Report", command=self.update_values,
                   bg="#0066FF", fg="white", font=("Segoe UI", 12, "bold"),
                   bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
-
+        
+    # Update Values Based on User Input
     def update_values(self):
         try:
             weight = float(self.weight_var.get())
@@ -158,6 +163,8 @@ class HealthReport:
                    f"BMI Status: {bmi:.1f}\n"
                    f"Total Burned: {total_calories:.0f} kcal")
         self.summary_label.config(text=summary)
+
+    # Build Delete Button
     def build_delete_button(self):
         card = tk.Frame(self.scrollable_frame, bg="#F5F6FA")
         card.pack(padx=20, pady=10, fill="x")
@@ -166,9 +173,11 @@ class HealthReport:
                   bg="#FE0161", fg="white", font=("Segoe UI", 12, "bold"),
                   bd=0, padx=50, pady=8).pack(side="left", expand=True, fill="x", padx=5)
         
+    # Delete Report Function    
     def delete_report(self):
         self.root.destroy()
-        
+
+    # Create BMI Bar Chart    
     def create_bmi_bar(self, bmi):
         colors = ['#3457D5', '#00B2B2', '#00D27F', '#FFB340', '#FF5A5A']
         bmi_range = [15, 16, 18.5, 25, 30, 40]
