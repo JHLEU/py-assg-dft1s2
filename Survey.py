@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 class PinkThemedFitnessQuestionn:
+    # Initialize the survey application
     def __init__(self, root):
         self.root = root
         self.root.title("FitQuest | Personalized Assessment")
@@ -11,7 +12,8 @@ class PinkThemedFitnessQuestionn:
         
         self.root.bind('<F11>', self.toggle_fullscreen)
         self.is_fullscreen = False
-
+        
+        # Question and Answer Data
         self.qa_data = [
             {"q": "What is your primary fitness goal?", "options": ["Build Muscle 💪", "Lose Weight ⚖️", "Improve Health ❤️", "Increase Endurance 🏃"]},
             {"q": "How often do you exercise currently?", "options": ["Never (just starting)", "1-2 times per week", "3-4 times per week", "5+ times per week"]},
@@ -25,11 +27,13 @@ class PinkThemedFitnessQuestionn:
         
         self.setup_style()
         self.setup_ui()
-        
+
+    # Toggle fullscreen mode    
     def toggle_fullscreen(self, event=None):
         self.is_fullscreen = not self.is_fullscreen
         self.root.attributes('-fullscreen', self.is_fullscreen)
-        
+
+    # Set up custom styles    
     def setup_style(self):
         style = ttk.Style()
         style.theme_use('clam')
@@ -54,6 +58,7 @@ class PinkThemedFitnessQuestionn:
         style.configure('Program.TLabel', font=('Helvetica', 20, 'bold'), foreground=PINK_MAIN, background=BACKGROUND)
         style.configure('TRadiobutton', font=('Arial', 12), background='white', foreground='#555555', padding=5)
 
+    # Set up the main UI components
     def setup_ui(self):
         self.main_frame = ttk.Frame(self.root, padding="40", style='TFrame')
         self.main_frame.pack(expand=True, fill='both')
@@ -90,6 +95,7 @@ class PinkThemedFitnessQuestionn:
         
         self.load_question()
 
+    # Load current question and options
     def load_question(self):
         q_data = self.qa_data[self.current_question_index]
         self.update_progress()
@@ -108,13 +114,15 @@ class PinkThemedFitnessQuestionn:
 
         self.prev_btn.config(state='normal' if self.current_question_index > 0 else 'disabled')
         self.next_btn.config(text="Finish 💪" if self.current_question_index == len(self.qa_data) - 1 else "Next ➡️")
-    
+
+    # Update progress bar and label
     def update_progress(self):
         current = self.current_question_index + 1
         val = (current / len(self.qa_data)) * 100
         self.progress['value'] = val
         self.progress_label.config(text=f"Progress: Question {current} of {len(self.qa_data)}")
 
+    # Go to next question
     def next_question(self):
         answer = self.selected_option.get()
         if not answer:
@@ -127,25 +135,27 @@ class PinkThemedFitnessQuestionn:
             self.load_question()
         else:
             self.finish_questionnaire()
-    
+
+    # Go to previous question
     def previous_question(self):
         if self.current_question_index > 0:
             self.current_question_index -= 1
             self.load_question()
-        
+
+    # Skip survey
     def skip_survey(self):
         if messagebox.askyesno("Confirm Skip", "Skip to results? Unanswered questions will be marked 'Skipped'."):
             self.finish_questionnaire()
 
+    # Display the program
     def display_program(self):
-        # Clear the frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
         goal = self.answers.get(0, "Health")
         freq = self.answers.get(1, "Starting")
         
-        # Simple Logic
+        
         title = f"Your Custom {goal} Plan"
         plan = f"Based on your preference for exercising {freq}, we have designed a specific routine. Focus on consistency and hydration!"
 
@@ -162,17 +172,16 @@ class PinkThemedFitnessQuestionn:
 
         ttk.Button(self.main_frame, text="Proceed to Login  LoginPage", command=self.go_to_login, style='TButton').pack(pady=20)
 
+    # Go to login page
     def go_to_login(self):
         """Destroys the survey window and opens the login window."""
-        self.root.destroy() # Destroy the current survey window
+        self.root.destroy() # 
         try:
             from login import Login_function
-            # Login_function creates its own window. 
-            # Pass show_skip=False as the user is now registered.
             Login_function(show_skip=False) 
         except ImportError:
             messagebox.showerror("Error", "login.py not found!")
-
+    # Finish questionnaire
     def finish_questionnaire(self):
         for i in range(len(self.qa_data)):
             if i not in self.answers:

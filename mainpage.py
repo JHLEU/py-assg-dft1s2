@@ -87,7 +87,7 @@ class Mainpage:
 
         # Show home screen by default 
         self.show_home_screen()
-
+    # Create taskbar
     def create_taskbar(self, parent):
         banner = tk.Frame(parent, bg=self.colors['primary'], height=70)
         banner.pack(fill="x", side="top")
@@ -155,6 +155,7 @@ class Mainpage:
                              )
         date_label.pack()
 
+    # Create main content area
     def create_main_content(self, program_card_container): 
         self.canvas = tk.Canvas(program_card_container, bg=self.colors['light'], highlightthickness=0)
         scrollbar = tk.Scrollbar(program_card_container, orient="vertical", command=self.canvas.yview) 
@@ -177,13 +178,16 @@ class Mainpage:
 
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 
+    # Mousewheel scrolling
     def _on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-
+    
+    # Clear main content area
     def clear_content(self):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
 
+    # Open video link
     def open_video(self, program):
         """Opens the YouTube link for the program using the webbrowser module."""
         video_url = program['youtube']
@@ -195,7 +199,7 @@ class Mainpage:
     # ----------------------------------------------------
     # --- VIEW METHODS (SCREENS) ---
     # ----------------------------------------------------
-
+    #  Show home screen
     def show_home_screen(self):
         self.clear_content()
         self.everyrow_frame = tk.Frame(self.scrollable_frame, bg=self.colors['light'], width=1200, height=800)
@@ -256,7 +260,8 @@ class Mainpage:
                     self.create_program_card(row_frame, program).pack(side='left', padx=50)
         self.everyrow_frame.pack(anchor="center", pady=20)
         self.show_quick_stats()
-        
+
+    #  Show quick stats    
     def show_quick_stats(self):
         """Show quick statistics on home screen"""
         self.destroy_quick_stats()
@@ -310,7 +315,8 @@ class Mainpage:
                                fg=self.colors['text_light'], bg=self.colors['card'])
         stat4_label.pack(padx=10)
         everystate_frame.pack(anchor="center")
-
+    
+    #destroy quick stats
     def destroy_quick_stats(self):
         if self.stats_frame is not None:
             self.stats_frame.destroy()
@@ -390,7 +396,8 @@ class Mainpage:
         watch_btn.pack(pady=15)
         
         return card_frame
-
+    
+    # --- Profile Screen ---
     def show_profile(self):
         self.destroy_quick_stats()
         self.clear_content()
