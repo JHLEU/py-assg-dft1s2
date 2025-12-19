@@ -56,7 +56,7 @@ class HealthReport:
         self.build_exercise_card()
         self.build_summary_card()
         self.build_update_button()
-
+        self.build_delete_button()
         self.update_values()
        
     def card(self, master):
@@ -126,10 +126,6 @@ class HealthReport:
                   bg="#0066FF", fg="white", font=("Segoe UI", 12, "bold"),
                   bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
 
-        tk.Button(card, text="Exit to Main", command=self.root.destroy,
-                  bg="#FE0161", fg="white", font=("Segoe UI", 12, "bold"),
-                  bd=0, padx=50, pady=10).pack(side="left", expand=True, fill="x", padx=5)
-
     def update_values(self):
         try:
             weight = float(self.weight_var.get())
@@ -162,7 +158,17 @@ class HealthReport:
                    f"BMI Status: {bmi:.1f}\n"
                    f"Total Burned: {total_calories:.0f} kcal")
         self.summary_label.config(text=summary)
+    def build_delete_button(self):
+        card = tk.Frame(self.scrollable_frame, bg="#F5F6FA")
+        card.pack(padx=20, pady=10, fill="x")
 
+        tk.Button(card, text="Delete Report", command=self.delete_report,
+                  bg="#FE0161", fg="white", font=("Segoe UI", 12, "bold"),
+                  bd=0, padx=50, pady=8).pack(side="left", expand=True, fill="x", padx=5)
+        
+    def delete_report(self):
+        self.root.destroy()
+        
     def create_bmi_bar(self, bmi):
         colors = ['#3457D5', '#00B2B2', '#00D27F', '#FFB340', '#FF5A5A']
         bmi_range = [15, 16, 18.5, 25, 30, 40]
