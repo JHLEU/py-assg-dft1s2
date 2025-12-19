@@ -490,8 +490,10 @@ class Mainpage:
     # --- Calorie Calculator Screen ---
     def show_calorie_calculator(self):
         """Show calorie calculator screen"""
-        new_root = tk.Tk()
-        HealthReport(new_root)
+        # Use Toplevel for the new window instead of a new Tk() instance.
+        # This makes it a child of the main application window.
+        report_window = tk.Toplevel(self.root)
+        HealthReport(report_window)
         
     # --- Progress Tracker Screen ---
     def show_progress_tracker(self):
