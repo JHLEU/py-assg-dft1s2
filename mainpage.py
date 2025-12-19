@@ -2,7 +2,6 @@ import tkinter as tk
 import webbrowser
 from tkinter import messagebox
 from datetime import datetime
-# from login import IS_LOGGED_IN, LOGGED_IN_USER  <- This import is no longer needed for state
 from progress_tracking import ProgressTrackingApp
 from report import HealthReport
 
@@ -23,8 +22,7 @@ class Mainpage:
             'Username': 'Guest'
         }
         self.user_profile = self.default_profile.copy()
-        # -------------------------------------
-        
+    
         # Color scheme
         self.colors = {
             'primary': '#FE0161',# Pinkish Red
@@ -65,12 +63,6 @@ class Mainpage:
 
         self.setup_ui()
     
-    # ----------------------------------------------------
-    # --- DATA LOADING AND PERSISTENCE METHODS ---
-    # ----------------------------------------------------
-    
- 
-        
     # ----------------------------------------------------
     # --- UTILITY AND SETUP METHODS ---
     # ----------------------------------------------------
@@ -269,7 +261,6 @@ class Mainpage:
         """Show quick statistics on home screen"""
         self.destroy_quick_stats()
           
-        # --- FIXED SECTION START ---
         # Create ONE main container and assign it to self.stats_frame.
         self.stats_frame = tk.Frame(self.root, bg=self.colors['card'], height=50)
         self.stats_frame.pack(fill="x", side="bottom")
@@ -277,19 +268,15 @@ class Mainpage:
         # Create a single frame inside the container to hold the stats content.
         mainstats_frame = tk.Frame(self.stats_frame, bg=self.colors['card'])
         mainstats_frame.pack(fill="x")
-        # --- FIXED SECTION END ---
 
         # Calculate stats
-        total_workouts = len(self.exercise_log)
-        calories_burned = sum(log.get('calories', 0) for log in self.exercise_log)
-        scheduled_workouts = len(self.schedule)
         available_programs = len(self.programs)
 
         # Individual stat frames
         everystate_frame = tk.Frame(mainstats_frame, bg=self.colors['card'])
         stat1_frame = tk.Frame(everystate_frame, bg=self.colors['card'])
         stat1_frame.pack(side='left', padx=(0,0), pady=20)
-        stat1_value = tk.Label(stat1_frame, text=f"{total_workouts}", font=('Arial', 24, 'bold'),
+        stat1_value = tk.Label(stat1_frame, text="0", font=('Arial', 24, 'bold'),
                                fg=self.colors['primary'], bg=self.colors['card'])
         stat1_value.pack(padx=10, pady=(0, 5))
         stat1_label = tk.Label(stat1_frame, text="Total Workouts", font=('Arial', 11),
@@ -298,7 +285,7 @@ class Mainpage:
 
         stat2_frame = tk.Frame(everystate_frame, bg=self.colors['card'])
         stat2_frame.pack(side='left', padx=(150,0), pady=20)
-        stat2_value = tk.Label(stat2_frame, text=f"{calories_burned}", font=('Arial', 24, 'bold'),
+        stat2_value = tk.Label(stat2_frame, text="0", font=('Arial', 24, 'bold'),
                                fg=self.colors['primary'], bg=self.colors['card'])
         stat2_value.pack(padx=10, pady=(0, 5))
         stat2_label = tk.Label(stat2_frame, text="Calories Burned", font=('Arial', 11),
@@ -307,7 +294,7 @@ class Mainpage:
 
         stat3_frame = tk.Frame(everystate_frame, bg=self.colors['card'])
         stat3_frame.pack(side='left', padx=(150,0), pady=20)
-        stat3_value = tk.Label(stat3_frame, text=f"{scheduled_workouts}", font=('Arial', 24, 'bold'),
+        stat3_value = tk.Label(stat3_frame, text="0", font=('Arial', 24, 'bold'),
                                fg=self.colors['primary'], bg=self.colors['card'])
         stat3_value.pack(padx=10, pady=(0, 5))
         stat3_label = tk.Label(stat3_frame, text="Scheduled Workouts", font=('Arial', 11),
