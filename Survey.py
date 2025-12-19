@@ -163,13 +163,19 @@ class PinkThemedFitnessQuestionn:
         ttk.Button(self.main_frame, text="Return to Home 🏠", command=self.go_to_mainpage, style='TButton').pack(pady=20)
 
     def go_to_mainpage(self):
-        """Clears current UI and reloads the Mainpage class onto the existing root."""
-        self.main_frame.destroy() # Remove the survey UI
-        try:
-            from mainpage import Mainpage
-            Mainpage(self.root) # Initialize Mainpage on the same root window
-        except ImportError:
-            messagebox.showerror("Error", "mainpage.py not found!")
+        self.root.destroy() # Close survey
+        
+        import mainpage # Import the file
+        from mainpage import Mainpage, start_login_process # Import the class and handler
+        
+        new_root = tk.Tk()
+        app = Mainpage(new_root) # Create the mainpage
+        
+        # --- THIS IS THE FIX ---
+        # Re-inject the link so the button in the profile works!
+        app.set_login_handler(lambda: start_login_process(new_root))
+        
+        new_root.mainloop()
 
     def finish_questionnaire(self):
         for i in range(len(self.qa_data)):
