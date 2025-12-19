@@ -160,22 +160,18 @@ class PinkThemedFitnessQuestionn:
         program_text.config(state=tk.DISABLED)
         program_text.pack(pady=20, padx=40)
 
-        ttk.Button(self.main_frame, text="Return to Home 🏠", command=self.go_to_mainpage, style='TButton').pack(pady=20)
+        ttk.Button(self.main_frame, text="Proceed to Login  LoginPage", command=self.go_to_login, style='TButton').pack(pady=20)
 
-    def go_to_mainpage(self):
-        self.root.destroy() # Close survey
-        
-        import mainpage # Import the file
-        from mainpage import Mainpage, start_login_process # Import the class and handler
-        
-        new_root = tk.Tk()
-        app = Mainpage(new_root) # Create the mainpage
-        
-        # --- THIS IS THE FIX ---
-        # Re-inject the link so the button in the profile works!
-        app.set_login_handler(lambda: start_login_process(new_root))
-        
-        new_root.mainloop()
+    def go_to_login(self):
+        """Destroys the survey window and opens the login window."""
+        self.root.destroy() # Destroy the current survey window
+        try:
+            from login import Login_function
+            # Login_function creates its own window. 
+            # Pass show_skip=False as the user is now registered.
+            Login_function(show_skip=False) 
+        except ImportError:
+            messagebox.showerror("Error", "login.py not found!")
 
     def finish_questionnaire(self):
         for i in range(len(self.qa_data)):
